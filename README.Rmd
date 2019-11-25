@@ -18,37 +18,103 @@ knitr::opts_chunk$set(
 [![Travis build status](https://travis-ci.org/jonathansmart/BayesGrowth.svg?branch=master)](https://travis-ci.org/jonathansmart/BayesGrowth)
 <!-- badges: end -->
 
-The goal of BayesGrowth is to ...
+BayesGrowth combines length-at-age modelling for fisheries with MCMC implemented using JAGS and the [rjags](https://cran.r-project.org/web/packages/rjags/index.html) package. Growth modelling using models such as the von Bertalanffy growth model involves three parameters: $L_{\infty}$, $k$ and either $L_{0}$ or $t_{0}$. Two of these parameters: $L_{0}$ and $L_{\infty}$ have direct biological meaning as the size-at-birth and maximum length, respectively. This package provides the tools to run an MCMC model with these two parameters treated as size-at-birth and maximum length using a JAGS model. This MCMC model is pre-specified and built into wrapper functions.
+
+The user can therefore run an MCMC growth model using knowledge of species length-at-birth and maximum size ast priors.
 
 ## Installation
 
-You can install the released version of BayesGrowth from [CRAN](https://CRAN.R-project.org) with:
+You can install the released version of BayesGrowth from [Github](https://github.com/jonathansmart/BayesGrowth) with:
 
-``` r
-install.packages("BayesGrowth")
+``` {r, eval = FALSE}
+devtools::install_github("jonathansmart/BayesGrowth")
 ```
 
-## Example
+## Usage
 
-This is a basic example which shows you how to solve a common problem:
+The main `BayesGrowth` function is `Estimate_MCMC_Growth` which is the wrapper function around an rjags model. It requires a data input that includes Age and Length, a model needs to be specified (several options are available) and the priors must be specified. Priors include the max size with an error, length-at-birth with an error, an upper value for $k$ and $\sigma$. These latter two parameters have no informative priors so just need senscible upper bounds. Many fish species (including this example) have a size at birth of zero. Therefore, this can be used along with a very small error to indicate that this is a certain value. The `L0.se` argument cannot be zero, although the model is specified to truncate it to zero and keep growth positive.
 
-```{r example}
+```{r model,message=FALSE, warning=FALSE}
 library(BayesGrowth)
-## basic example code
+
+data("example_data")
+## Biological info - lengths in mm
+max_size <- 440
+max_size_se <- 4.4
+birth_size <- 0
+birth_size_se <- 0.001 # an se cannot be zero
+
+# Use the function to estimate the JAGS model
+results <- Estimate_MCMC_Growth(example_data, Model = "VB" ,
+                     iter = 10000,
+                     Linf = 440,
+                     Linf.se = 4.4,
+                     L0 = 0,
+                     sigma.max = 100,
+                     L0.se = .001,
+                     k.max = 1)
+
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
 
-```{r cars}
-summary(cars)
+The function returns the rjags outputs which is an object of class 'mcmc.list'
+```{r output,message=FALSE}
+head(results)
 ```
 
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date.
-
-You can also embed plots, for example:
-
-```{r pressure, echo = FALSE}
-plot(pressure)
+Therefore, all of the diagnostics from the rjags library can be used.
+```{r Diagnostics,message=FALSE,  fig.height = 10, fig.width = 8}
+summary(results)
+plot(results,density = T, smooth = F)
 ```
 
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub!
+Additional `BayesGrowth` functions are available that help the user manipulate the objects. The 
+`Calculate_MCMC_growth_curve` function will provide confidence intervals around the growth curve based on MCMC percentiles. This is essentially a wrapper around the `tidybayes::mean_qi()` function which means it can be passed straight into a ggplot with the `tidybayes::geom_line_ribbon` function.
+
+```{r plot,message=FALSE, fig.height = 6, fig.width = 8, warning=FALSE}
+
+growth_curve <- Calculate_MCMC_growth_curve(results, Model = "VB",
+                                            max.age = max(example_data$Age), probs = .95)
+library(tidybayes)
+library(ggplot2)
+
+ggplot(growth_curve, aes(Age, LAA))+
+  geom_point(data = example_data, aes(Age, Length), alpha = .3)+
+  geom_lineribbon(size = 1.5, fill = "steelblue") +
+  labs(y = "Total Length (mm)", x = "Age (yrs)")+
+  scale_y_continuous(expand = c(0,0))+
+  scale_x_continuous(expand = c(0,0), breaks = seq(0,13,1))+
+  theme_bw()+
+  theme(text = element_text(size = 14))
+
+```
+
+This represents a much improved fit over a standard non-linear estimated model, even if the length-at-birth were fixed at zero. Here the fit is compared using an nls model fit using the [AquaticLifeHistory package](https://github.com/jonathansmart/AquaticLifeHistory).
+
+
+```{r compare plot,message=FALSE, fig.height = 6, fig.width = 8, warning=FALSE, echo=FALSE}
+ 
+library(AquaticLifeHistory)
+fixed_mod <- Estimate_Growth(example_data,n.bootstraps = 1000, Birth.Len = 0, models = "VB", plots = FALSE)
+free_mod <- Estimate_Growth(example_data,n.bootstraps = 1000, models = "VB", plots = FALSE)
+
+ggplot(growth_curve, aes(Age, LAA))+
+  geom_line(data = free_mod$Estimates,inherit.aes = FALSE,
+            aes(Age, AVG, col = "nls model - free L0"), size = 1.5)+
+
+  geom_line(data = fixed_mod$Estimates,inherit.aes = FALSE,
+            aes(Age, AVG, col = "nls model - fixed L0"), size = 1.5)+
+  geom_point(data = example_data, aes(Age, Length), alpha = .3)+
+  geom_lineribbon( aes(fill = "MCMC model", col = "MCMC model"),size = 1.5, alpha = .5) +
+   geom_line(aes(Age, LAA, col = "MCMC model"), size = 1.5)+
+  labs(y = "Total Length (mm)", x = "Age (yrs)")+
+  scale_color_viridis_d(name = "Model", begin = .3, end = .8)+
+  scale_fill_viridis_d(begin = .5, end = .6)+
+  guides(fill = FALSE)+
+  scale_y_continuous(expand = c(0,0))+
+  scale_x_continuous(expand = c(0,0), breaks = seq(0,13,1))+
+  theme_bw()+
+  theme(text = element_text(size = 14))
+
+```
+
