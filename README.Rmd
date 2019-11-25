@@ -92,7 +92,7 @@ ggplot(growth_curve, aes(Age, LAA))+
 This represents a much improved fit over a standard non-linear estimated model, even if the length-at-birth were fixed at zero. Here the fit is compared using an nls model fit using the [AquaticLifeHistory package](https://github.com/jonathansmart/AquaticLifeHistory).
 
 
-```{r compare plot,message=FALSE, fig.height = 6, fig.width = 8, warning=FALSE, echo=FALSE}
+```{r compare_plot,message=FALSE, fig.height = 6, fig.width = 8, warning=FALSE, echo=FALSE}
  
 library(AquaticLifeHistory)
 fixed_mod <- Estimate_Growth(example_data,n.bootstraps = 1000, Birth.Len = 0, models = "VB", plots = FALSE)
