@@ -1,0 +1,21 @@
+Package: BayesGrowth
+Type: Package
+Title: Estimate fish growth using MCMC analysis
+Version: 0.1.1
+Author: person("Jonathan", "Smart", email = "jonathan.smart@sa.gov.au", role = c("aut", "cre", "ctb"))
+Maintainer: Jonathan Smart <jonathan.smart@sa.gov.au>
+Description: A package to estimate fish length-at-age models using MCMC analysis in JAGS models.
+Encoding: UTF-8
+LazyData: true
+Depends: R (>= 3.3)
+Imports: plyr,
+    stats,
+    dplyr,
+    tidyr,
+    tidybayes,
+    rjags
+RoxygenNote: 6.0.1
+License: GPL-3
+Suggests: knitr,
+    rmarkdown
+VignetteBuilder: knitr
