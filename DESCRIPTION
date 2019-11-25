@@ -19,3 +19,5 @@ License: GPL-3
 Suggests: knitr,
     rmarkdown
 VignetteBuilder: knitr
+URL: https://github.com/jonathansmart/BayesGrowth
+BugReports: https://github.com/jonathansmart/BayesGrowth/issues
