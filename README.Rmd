@@ -23,6 +23,8 @@ BayesGrowth combines length-at-age modelling for fisheries with MCMC implemented
 The user can therefore run an MCMC growth model using knowledge of species length-at-birth and maximum size ast priors.
 
 ## Installation
+This package provides a series of wrapper functions to the rjags package which will run JAGS ("Just Another Gibbs Sampler") MCMC models. Therefore, _JAGS must be installed before this package is installed_. To install JAGS, visit:
+https://sourceforge.net/projects/mcmc-jags/files/
 
 You can install the released version of BayesGrowth from [Github](https://github.com/jonathansmart/BayesGrowth) with:
 
