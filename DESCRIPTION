@@ -13,7 +13,8 @@ License: GPL-3
 URL: https://github.com/jonathansmart/BayesGrowth
 BugReports: https://github.com/jonathansmart/BayesGrowth/issues
 Depends: 
-    R (>= 3.3)
+    R (>= 3.3), coda (>= 0.13)
+SystemRequirements: JAGS 4.x.y
 Imports: 
     dplyr,
     plyr,
@@ -23,7 +24,8 @@ Imports:
     tidyr
 Suggests: 
     knitr,
-    rmarkdown
+    rmarkdown,
+    tcltk
 VignetteBuilder: 
     knitr
 Encoding: UTF-8
