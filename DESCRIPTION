@@ -25,7 +25,6 @@ Imports:
 Suggests: 
     knitr,
     rmarkdown,
-    tcltk
 VignetteBuilder: 
     knitr
 Encoding: UTF-8
