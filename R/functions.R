@@ -273,6 +273,7 @@ Calculate_DIC <- function(data, Linf = NULL, Linf.se = NULL,
 #' @return A tibble with 5 columns that include each parameter and the results of their posterior distributions.
 #'     These include the mean, Standard deviation, lower 95th percentile and upper 95th percentile
 #' @import tidyr
+#' @importFrom stats sd quantile
 #' @export
 
 Get_MCMC_parameters <-function(data){

@@ -6,6 +6,7 @@
 #' @docType package
 NULL
 
+globalVariables(c( "Age", "LAA", "Parameter", "Penalised deviance", "Value", "quantile", "sd", "sigma"))
 
 #' Example length-at-age data
 #'
