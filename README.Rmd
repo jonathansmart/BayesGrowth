@@ -15,6 +15,7 @@ knitr::opts_chunk$set(
 # BayesGrowth
 
 <!-- badges: start -->
+[![Travis build status](https://travis-ci.org/jonathansmart/BayesGrowth.svg?branch=master)](https://travis-ci.org/jonathansmart/BayesGrowth)
 <!-- badges: end -->
 
 The goal of BayesGrowth is to ...
