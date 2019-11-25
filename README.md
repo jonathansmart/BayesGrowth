@@ -19,10 +19,10 @@ You can install the released version of BayesGrowth from [Github](https://github
 devtools::install_github("jonathansmart/BayesGrowth")
 ```
 
-Example
--------
+Usage
+-----
 
-This is a basic example which shows you how to solve a common problem:
+The main `BayesGrowth` function is `Estimate_MCMC_Growth` which is the wrapper function around an rjags model. It requires a data input that includes Age and Length, a model needs to be specified (several options are available) and the priors must be specified. Priors include the max size with an error, length-at-birth with an error, an upper value for *k* and *σ*. These latter two parameters have no informative priors so just need senscible upper bounds. Many fish species (including this example) have a size at birth of zero. Therefore, this can be used along with a very small error to indicate that this is a certain value. The `L0.se` argument cannot be zero, although the model is specified to truncate it to zero and keep growth positive.
 
 ``` r
 library(BayesGrowth)
@@ -32,12 +32,11 @@ data("example_data")
 max_size <- 440
 max_size_se <- 4.4
 birth_size <- 0
-birth_size_se <- 0.001 # an se cannot be zero so
+birth_size_se <- 0.001 # an se cannot be zero
 
 # Use the function to estimate the JAGS model
 results <- Estimate_MCMC_Growth(example_data, Model = "VB" ,
                      iter = 10000,
-                     thin = 1,
                      Linf = 440,
                      Linf.se = 4.4,
                      L0 = 0,
@@ -56,13 +55,13 @@ head(results)
 #> End = 1007 
 #> Thinning interval = 1 
 #>                L0     Linf         k    sigma
-#> [1,] 0.0005620452 392.0610 0.3723220 33.94318
-#> [2,] 0.0001369667 389.9172 0.3719000 34.37843
-#> [3,] 0.0024029083 391.4290 0.3718815 33.94910
-#> [4,] 0.0007986814 390.5713 0.3740651 34.59104
-#> [5,] 0.0003338447 392.0651 0.3714542 34.41875
-#> [6,] 0.0014637191 391.7149 0.3684055 34.31933
-#> [7,] 0.0003701148 392.6997 0.3682633 32.82473
+#> [1,] 0.0006652715 390.9521 0.3717089 34.23016
+#> [2,] 0.0002653097 391.8202 0.3741431 34.12191
+#> [3,] 0.0008244993 391.3167 0.3752415 33.85880
+#> [4,] 0.0002247448 390.2134 0.3762566 33.34104
+#> [5,] 0.0009638235 390.3530 0.3751728 32.35000
+#> [6,] 0.0004318568 389.5652 0.3738423 32.36783
+#> [7,] 0.0000784418 389.7947 0.3724705 32.89823
 #> 
 #> [[2]]
 #> Markov Chain Monte Carlo (MCMC) output:
@@ -70,13 +69,13 @@ head(results)
 #> End = 1007 
 #> Thinning interval = 1 
 #>                L0     Linf         k    sigma
-#> [1,] 1.437831e-03 391.1706 0.3686934 33.68340
-#> [2,] 5.876792e-04 391.6915 0.3714747 34.09151
-#> [3,] 7.586228e-04 392.5083 0.3685232 34.56320
-#> [4,] 1.450904e-05 389.9673 0.3697185 32.49913
-#> [5,] 9.742589e-04 391.8381 0.3727185 34.91729
-#> [6,] 6.155311e-04 392.1416 0.3698109 34.80104
-#> [7,] 1.829126e-03 394.7320 0.3689887 34.33722
+#> [1,] 0.0003172034 383.8720 0.3879421 33.79979
+#> [2,] 0.0003126417 389.0027 0.3790549 33.81706
+#> [3,] 0.0003552461 387.1678 0.3852045 32.89205
+#> [4,] 0.0010176001 386.8890 0.3853119 33.15583
+#> [5,] 0.0023008715 387.9941 0.3819780 32.42553
+#> [6,] 0.0005101382 388.5263 0.3830371 33.42809
+#> [7,] 0.0001943342 387.2390 0.3861711 34.75159
 #> 
 #> [[3]]
 #> Markov Chain Monte Carlo (MCMC) output:
@@ -84,13 +83,13 @@ head(results)
 #> End = 1007 
 #> Thinning interval = 1 
 #>                L0     Linf         k    sigma
-#> [1,] 3.278961e-04 384.0970 0.3948504 33.13292
-#> [2,] 1.368021e-03 383.1382 0.3948640 32.31931
-#> [3,] 1.792267e-04 382.7616 0.3968951 32.05192
-#> [4,] 1.236768e-03 382.3860 0.3968147 32.80638
-#> [5,] 3.561401e-05 382.7382 0.3933473 32.01858
-#> [6,] 1.241996e-03 383.8103 0.3935411 32.53760
-#> [7,] 1.299801e-05 380.5846 0.3941646 32.11056
+#> [1,] 0.0003541779 388.3304 0.3739821 33.64270
+#> [2,] 0.0017186522 389.0593 0.3693600 33.48490
+#> [3,] 0.0014169990 391.0227 0.3716809 33.82420
+#> [4,] 0.0005503210 391.0124 0.3766435 33.44774
+#> [5,] 0.0016794807 388.7599 0.3800068 33.19777
+#> [6,] 0.0007007575 389.1321 0.3823088 33.41521
+#> [7,] 0.0007860959 386.6312 0.3818066 33.26740
 #> 
 #> [[4]]
 #> Markov Chain Monte Carlo (MCMC) output:
@@ -98,19 +97,19 @@ head(results)
 #> End = 1007 
 #> Thinning interval = 1 
 #>                L0     Linf         k    sigma
-#> [1,] 0.0008450929 385.2614 0.3947052 33.65721
-#> [2,] 0.0007748658 382.6058 0.3948355 33.64765
-#> [3,] 0.0007460382 384.5935 0.3940808 33.63621
-#> [4,] 0.0015213388 383.0320 0.3921592 32.67531
-#> [5,] 0.0019646179 385.3097 0.3902396 33.14265
-#> [6,] 0.0001802971 384.8634 0.3911948 33.54316
-#> [7,] 0.0002729824 387.5196 0.3891440 32.95159
+#> [1,] 0.0003068650 383.7703 0.3970474 33.50448
+#> [2,] 0.0006980269 384.1806 0.3917652 32.61900
+#> [3,] 0.0006432910 382.1401 0.3915466 32.32490
+#> [4,] 0.0004167164 386.0858 0.3919686 34.80228
+#> [5,] 0.0002497434 383.3461 0.3948591 34.43699
+#> [6,] 0.0008830061 383.6027 0.3943774 34.14556
+#> [7,] 0.0007979783 384.3037 0.3958615 34.08158
 #> 
 #> attr(,"class")
 #> [1] "mcmc.list"
 ```
 
-Therefore, all of the diagnostics of the rjags library can be used.
+Therefore, all of the diagnostics from the rjags library can be used.
 
 ``` r
 summary(results)
@@ -123,25 +122,25 @@ summary(results)
 #> 1. Empirical mean and standard deviation for each variable,
 #>    plus standard error of the mean:
 #> 
-#>            Mean       SD  Naive SE Time-series SE
-#> L0    7.965e-04 0.000604 3.020e-06      3.057e-06
-#> Linf  3.880e+02 3.141438 1.571e-02      6.146e-02
-#> k     3.818e-01 0.008558 4.279e-05      1.701e-04
-#> sigma 3.354e+01 0.758228 3.791e-03      6.948e-03
+#>            Mean        SD  Naive SE Time-series SE
+#> L0    7.979e-04 0.0005993 2.997e-06      2.985e-06
+#> Linf  3.880e+02 3.1929815 1.596e-02      6.364e-02
+#> k     3.820e-01 0.0087000 4.350e-05      1.765e-04
+#> sigma 3.354e+01 0.7759623 3.880e-03      7.147e-03
 #> 
 #> 2. Quantiles for each variable:
 #> 
 #>            2.5%       25%       50%       75%     97.5%
-#> L0    3.113e-05 3.145e-04 6.735e-04 1.148e-03   0.00223
-#> Linf  3.820e+02 3.860e+02 3.880e+02 3.901e+02 394.39122
-#> k     3.652e-01 3.761e-01 3.817e-01 3.875e-01   0.39887
-#> sigma 3.210e+01 3.302e+01 3.353e+01 3.405e+01  35.05989
+#> L0    3.056e-05 3.194e-04 6.814e-04 1.149e-03 2.231e-03
+#> Linf  3.818e+02 3.858e+02 3.880e+02 3.901e+02 3.943e+02
+#> k     3.655e-01 3.760e-01 3.818e-01 3.878e-01 3.994e-01
+#> sigma 3.206e+01 3.301e+01 3.353e+01 3.406e+01 3.510e+01
 plot(results,density = T, smooth = F)
 ```
 
 <img src="man/figures/README-Diagnostics-1.png" width="100%" />
 
-Additional `BayesGrowth` functions are available that help the user manipulate the objects. The `Calculate_MCMC_growth_curve` function will provide confidence intervals around the growth curve based on MCMC percentiles. This is essentially a wrapper around the `tidybayes::mean_qi()` which means it can be passed straight into a ggplot with the `tidybayes::geom_line_ribbon`.
+Additional `BayesGrowth` functions are available that help the user manipulate the objects. The `Calculate_MCMC_growth_curve` function will provide confidence intervals around the growth curve based on MCMC percentiles. This is essentially a wrapper around the `tidybayes::mean_qi()` function which means it can be passed straight into a ggplot with the `tidybayes::geom_line_ribbon` function.
 
 ``` r
 
