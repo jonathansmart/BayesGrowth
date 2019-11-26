@@ -100,7 +100,8 @@ This represents a much improved fit over a standard non-linear estimated model, 
 library(AquaticLifeHistory)
 fixed_mod <- Estimate_Growth(example_data,n.bootstraps = 1000, Birth.Len = 0, models = "VB", plots = FALSE)
 free_mod <- Estimate_Growth(example_data,n.bootstraps = 1000, models = "VB", plots = FALSE)
-
+growth_curve <- Calculate_MCMC_growth_curve(results, Model = "VB",
+                                            max.age = max(example_data$Age), probs = c(.95))
 ggplot(growth_curve, aes(Age, LAA))+
   geom_line(data = free_mod$Estimates,inherit.aes = FALSE,
             aes(Age, AVG, col = "nls model - free L0"), size = 1.5)+
