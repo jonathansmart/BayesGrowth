@@ -1,6 +1,7 @@
 Type: Package
 Package: BayesGrowth
 Title: Estimate fish growth using MCMC analysis
+Date: 2019
 Version: 0.0.9000
 Authors@R: person("Jonathan", "Smart", 
     email = "jonathan.smart@sa.gov.au", 
