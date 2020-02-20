@@ -42,18 +42,18 @@ library(BayesGrowth)
 data("example_data")
 ## Biological info - lengths in mm
 max_size <- 440
-max_size_se <- 4.4
+max_size_se <- 5
 birth_size <- 0
 birth_size_se <- 0.001 # an se cannot be zero
 
 # Use the function to estimate the JAGS model
 results <- Estimate_MCMC_Growth(example_data, Model = "VB" ,
                      iter = 10000,
-                     Linf = 440,
-                     Linf.se = 4.4,
-                     L0 = 0,
+                     Linf = max_size,
+                     Linf.se = max_size_se,
+                     L0 = birth_size,
                      sigma.max = 100,
-                     L0.se = .001,
+                     L0.se = birth_size_se,
                      k.max = 1)
 
 ```
