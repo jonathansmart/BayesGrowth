@@ -14,13 +14,21 @@ BayesGrowth combines length-at-age modelling for fisheries with MCMC
 implemented using JAGS and the
 [rjags](https://cran.r-project.org/web/packages/rjags/index.html)
 package. Growth modelling using models such as the von Bertalanffy
-growth model involves three parameters: \(L_{\infty}\), \(k\) and either
-\(L_{0}\) or \(t_{0}\). Two of these parameters: \(L_{0}\) and
-\(L_{\infty}\) have direct biological meaning as the size-at-birth and
-maximum length, respectively. This package provides the tools to run an
-MCMC model with these two parameters treated as size-at-birth and
-maximum length using a JAGS model. This MCMC model is pre-specified and
-built into wrapper functions.
+growth model involves three parameters:
+![L\_{}](https://render.githubusercontent.com/render/math?math=L_%7B%5Cinfty%7D),
+*k* and either
+![L\_{0}](https://render.githubusercontent.com/render/math?math=L_%7B0%7D)
+or
+![t\_{0}](https://render.githubusercontent.com/render/math?math=t_%7B0%7D).
+Two of these parameters:
+![L\_{0}](https://render.githubusercontent.com/render/math?math=L_%7B0%7D)
+and
+![L\_{}](https://render.githubusercontent.com/render/math?math=L_%7B%5Cinfty%7D)
+have direct biological meaning as the size-at-birth and maximum length,
+respectively. This package provides the tools to run an MCMC model with
+these two parameters treated as size-at-birth and maximum length using a
+JAGS model. This MCMC model is pre-specified and built into wrapper
+functions.
 
 The user can therefore run an MCMC growth model using knowledge of
 species length-at-birth and maximum size as priors.
@@ -47,13 +55,16 @@ wrapper function around an rjags model. It requires a data input that
 includes columns that can be identified “Age” and “Length”, the model
 needs to be specified (several options are available) and the priors
 must be specified. Priors include the max size with an error,
-length-at-birth with an error and upper limits for \(k\) and \(\sigma\).
+length-at-birth with an error and upper limits for *k* and
+![](https://render.githubusercontent.com/render/math?math=%5Csigma).
 These latter two parameters have no informative priors and only require
 sensible upper bounds. Many fish species (including this example) have a
 size at birth of zero. Therefore, this can value can be used as a prior
 along with a very small error to indicate high certainty of this prior.
 The `L0.se` argument cannot be zero, but the model is specified to
-truncate \(L_{0}\) at zero and keep growth positive.
+truncate
+![L\_{0}](https://render.githubusercontent.com/render/math?math=L_%7B0%7D)
+at zero and keep growth positive.
 
 ``` r
 library(BayesGrowth)
@@ -87,13 +98,13 @@ head(results)
 #> End = 1007 
 #> Thinning interval = 1 
 #>                L0     Linf         k    sigma
-#> [1,] 4.488882e-05 325.6767 0.5960316 26.59236
-#> [2,] 7.517356e-05 326.6002 0.5986476 25.38877
-#> [3,] 7.385076e-05 324.2891 0.5983142 25.59835
-#> [4,] 4.121038e-04 325.8852 0.5922294 25.69103
-#> [5,] 1.641973e-05 326.0010 0.5934298 27.12353
-#> [6,] 4.553976e-04 327.8349 0.5934005 25.19848
-#> [7,] 1.578843e-03 326.0242 0.6058683 26.54532
+#> [1,] 1.620193e-03 322.9924 0.6252832 25.33929
+#> [2,] 1.888714e-04 321.7057 0.6262001 24.26403
+#> [3,] 7.001445e-05 321.4209 0.6346040 24.59340
+#> [4,] 1.106807e-03 320.3221 0.6425210 25.17661
+#> [5,] 8.420172e-05 318.3766 0.6585767 25.30314
+#> [6,] 9.839419e-04 319.5081 0.6521222 24.66876
+#> [7,] 2.761105e-04 318.8243 0.6551852 24.31665
 #> 
 #> [[2]]
 #> Markov Chain Monte Carlo (MCMC) output:
@@ -101,13 +112,13 @@ head(results)
 #> End = 1007 
 #> Thinning interval = 1 
 #>                L0     Linf         k    sigma
-#> [1,] 0.0017147504 326.8731 0.5991217 26.32451
-#> [2,] 0.0002984886 325.8409 0.5981972 26.96292
-#> [3,] 0.0011963286 325.8721 0.6098430 25.53892
-#> [4,] 0.0009314804 322.8726 0.6100467 25.00895
-#> [5,] 0.0018254837 324.4057 0.6064083 25.90006
-#> [6,] 0.0007660022 325.2780 0.5982529 25.27672
-#> [7,] 0.0009750646 325.8695 0.6000366 25.25688
+#> [1,] 2.729452e-03 315.7365 0.6808001 23.00637
+#> [2,] 3.149000e-04 316.2117 0.6726950 23.61696
+#> [3,] 4.580170e-04 316.7876 0.6687817 23.75443
+#> [4,] 2.669531e-03 316.0115 0.6850629 23.51763
+#> [5,] 1.754852e-03 314.7021 0.6785013 23.52310
+#> [6,] 1.239856e-04 315.6326 0.6844819 23.45735
+#> [7,] 2.318665e-05 314.9931 0.6861442 24.10765
 #> 
 #> [[3]]
 #> Markov Chain Monte Carlo (MCMC) output:
@@ -115,13 +126,13 @@ head(results)
 #> End = 1007 
 #> Thinning interval = 1 
 #>                L0     Linf         k    sigma
-#> [1,] 1.662549e-04 324.4075 0.6065113 25.17975
-#> [2,] 8.069489e-04 325.5753 0.6096032 25.85848
-#> [3,] 1.256401e-03 323.6330 0.6161591 23.89699
-#> [4,] 6.643710e-04 323.1181 0.6187880 24.88484
-#> [5,] 3.401003e-05 321.0391 0.6208219 24.71695
-#> [6,] 1.345030e-03 322.6422 0.6236229 24.83958
-#> [7,] 1.342958e-03 323.6096 0.6241476 25.59646
+#> [1,] 0.0009088723 320.3561 0.6347524 24.00090
+#> [2,] 0.0010109374 320.1480 0.6431379 24.12359
+#> [3,] 0.0001968916 321.3025 0.6417628 25.15158
+#> [4,] 0.0008266579 320.0616 0.6445093 25.39160
+#> [5,] 0.0020838618 320.1917 0.6296088 25.93056
+#> [6,] 0.0005640227 322.2117 0.6278904 24.91463
+#> [7,] 0.0009385744 321.0957 0.6307897 24.98684
 #> 
 #> [[4]]
 #> Markov Chain Monte Carlo (MCMC) output:
@@ -129,13 +140,13 @@ head(results)
 #> End = 1007 
 #> Thinning interval = 1 
 #>                L0     Linf         k    sigma
-#> [1,] 0.0003766009 318.1324 0.6740486 24.93456
-#> [2,] 0.0014715359 314.3714 0.6703935 24.87597
-#> [3,] 0.0020864968 316.0134 0.6830210 24.68304
-#> [4,] 0.0012641278 313.3945 0.6883822 24.58046
-#> [5,] 0.0016279314 316.1042 0.6809096 23.23320
-#> [6,] 0.0003830199 315.6487 0.6773715 25.33736
-#> [7,] 0.0002557087 317.1293 0.6666446 23.74806
+#> [1,] 2.162523e-04 317.0216 0.6627174 23.21808
+#> [2,] 1.524742e-03 315.9498 0.6681138 23.32697
+#> [3,] 9.151084e-04 317.9562 0.6628014 23.27665
+#> [4,] 3.186078e-05 317.6608 0.6610399 23.10562
+#> [5,] 1.780628e-03 318.1236 0.6738835 23.36739
+#> [6,] 8.652171e-04 316.6314 0.6608945 24.79195
+#> [7,] 1.424658e-03 317.8562 0.6597827 24.35975
 #> 
 #> attr(,"class")
 #> [1] "mcmc.list"
@@ -154,19 +165,19 @@ summary(results)
 #> 1. Empirical mean and standard deviation for each variable,
 #>    plus standard error of the mean:
 #> 
-#>            Mean       SD  Naive SE Time-series SE
-#> L0    8.003e-04 0.000603 3.015e-06      3.004e-06
-#> Linf  3.180e+02 4.146394 2.073e-02      1.424e-01
-#> k     6.604e-01 0.034451 1.723e-04      1.171e-03
-#> sigma 2.431e+01 0.868429 4.342e-03      2.221e-02
+#>            Mean        SD  Naive SE Time-series SE
+#> L0    7.983e-04 0.0006055 3.027e-06      2.998e-06
+#> Linf  3.182e+02 4.1954397 2.098e-02      1.432e-01
+#> k     6.589e-01 0.0350873 1.754e-04      1.191e-03
+#> sigma 2.435e+01 0.8847075 4.424e-03      2.245e-02
 #> 
 #> 2. Quantiles for each variable:
 #> 
 #>            2.5%       25%       50%       75%     97.5%
-#> L0    3.341e-05 3.211e-04 6.779e-04 1.153e-03 2.234e-03
-#> Linf  3.108e+02 3.151e+02 3.177e+02 3.204e+02 3.272e+02
-#> k     5.901e-01 6.384e-01 6.605e-01 6.836e-01 7.264e-01
-#> sigma 2.274e+01 2.371e+01 2.427e+01 2.486e+01 2.614e+01
+#> L0    3.062e-05 3.193e-04 6.697e-04 1.152e-03 2.256e-03
+#> Linf  3.107e+02 3.153e+02 3.179e+02 3.208e+02 3.272e+02
+#> k     5.899e-01 6.353e-01 6.591e-01 6.823e-01 7.283e-01
+#> sigma 2.274e+01 2.373e+01 2.432e+01 2.492e+01 2.618e+01
 plot(results,density = T, smooth = F)
 ```
 
