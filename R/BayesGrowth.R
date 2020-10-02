@@ -1,13 +1,18 @@
 #' BayesGrowth
 #'
-#' @name BayesGrowth
-#' @author Jonathan Smart
-#' @description A package to estimate length-at-age using MCMC using rjags models
+#' @description A DESCRIPTION OF THE PACKAGE
+#'
 #' @docType package
-#' @import(Rcpp)
-#' @import(methods)
-#' @importFrom(rstan, sampling)
-#' @useDynLib(BayesGrowth, .registration = TRUE)
+#' @name BayesGrowth
+#' @aliases BayesGrowth
+#' @useDynLib BayesGrowth, .registration = TRUE
+#' @import methods
+#' @import Rcpp
+#' @importFrom rstan sampling
+#'
+#' @references
+#' Stan Development Team (2020). RStan: the R interface to Stan. R package version 2.19.3. https://mc-stan.org
+#'
 NULL
 
 globalVariables(c( "Age", "LAA", "Parameter", "Penalised deviance", "Value", "quantile", "sd", "sigma"))

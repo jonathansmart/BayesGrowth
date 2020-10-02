@@ -14,7 +14,7 @@ Estimate_MCMC_Growth(
   k.max = NULL,
   sigma.max = NULL,
   iter = 10000,
-  BurnIn = 1000,
+  BurnIn = iter * 0.1,
   n_cores = 1,
   n.chains = 4,
   thin = 1,
@@ -71,12 +71,12 @@ An object of class 'stanfit' from the rstan package.
 }
 \description{
 A wrapper function that creates a Stan MCMC model using the rstan package.
-The data and priors provided are combined into an rstan model that estimates a length-at-age
-model with a normal distribution. Three different growth models can be used: a von Bertalanffy
-model, Gompertz model or a logistic model. The prior on Linf and L0 are normally distributed
-and determined through the user providing a mean and se for each parameter. The growth completion
-parameter for any model (k) has a uniform prior which only requires an upper bound with the
-lower bound set at zero. Sigma is the residual variance of the data around the model and
-is set up in the same manner as 'k'. The growth estimates in the model are truncated to
-remain above zero so negative growth cannot occur.
+    The data and priors provided are combined into an rstan model that estimates a length-at-age
+    model with a normal distribution. Three different growth models can be used: a von Bertalanffy
+    model, Gompertz model or a logistic model. The prior on Linf and L0 are normally distributed
+    and determined through the user providing a mean and se for each parameter. The growth completion
+    parameter for any model (k) has a uniform prior which only requires an upper bound with the
+    lower bound set at zero. Sigma is the residual variance of the data around the model and
+    is set up in the same manner as 'k'. The growth estimates in the model are truncated to
+    remain above zero so negative growth cannot occur.
 }

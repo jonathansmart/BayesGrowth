@@ -67,5 +67,5 @@ An object of class 'compare.loo' from the 'loo_compare' function in the 'loo' pa
 }
 \description{
 Conduct growth model selection using 'Leave One Out' (LOO) cross validation analysis for three growth models
-(von Bertalanffy, Gompertz and Logistic) using the same prior parameters for each.
+    (von Bertalanffy, Gompertz and Logistic) using the same prior parameters for each.
 }

@@ -25,13 +25,13 @@ percentile of .75.}
 }
 \value{
 A tibble that has been formatted using  tidybayes::mean_qi(). This includes
-variables: Age, LAA, .lower, .upper, .width, .point and .interval.
+    variables: Age, LAA, .lower, .upper, .width, .point and .interval.
 }
 \description{
 A 'stan.fit' object produced from Estimate_MCMC_Growth is converted to a dataframe
-and structured using requested quantiles. This function takes the list of MCMC results for multiple
-chains, restructures them into a dataframe and calculates quantiles around length-at-age estimates.
-The quantiles are produced using the tidybayes::mean_qi() function and this result is returned from the function.
-This can be conveniently plotted in a ggplot using the geom_lineribbon() function provided in the tidybayes
-package.
+    and structured using requested quantiles. This function takes the list of MCMC results for multiple
+    chains, restructures them into a dataframe and calculates quantiles around length-at-age estimates.
+    The quantiles are produced using the tidybayes::mean_qi() function and this result is returned from the function.
+    This can be conveniently plotted in a ggplot using the geom_lineribbon() function provided in the tidybayes
+    package.
 }

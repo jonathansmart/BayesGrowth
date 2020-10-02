@@ -11,10 +11,10 @@ Get_MCMC_parameters(obj)
 }
 \value{
 A data.frame with the posterior distributions for each parameter.
-These include the mean, Standard error of the mean, Standard deviationof the mean, median,
-95th percentiles, effective sample sizes and Rhat.
+    These include the mean, Standard error of the mean, Standard deviationof the mean, median,
+    95th percentiles, effective sample sizes and Rhat.
 }
 \description{
 Get parameter summary statistics from the outputs of a Estimate_MCMC_Growth object. It is simplified set of
-results than is returned from summary(obj).
+    results than is returned from summary(obj).
 }

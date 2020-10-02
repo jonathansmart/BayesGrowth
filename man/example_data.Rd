@@ -15,8 +15,8 @@ A dataset used as examples in the vignettes and for users to test code with
 }
 \details{
 \itemize{
-\item Age. Number of growth bands determined from vertebral analysis
-\item Length. Total Length in mm determined via back-calculation
+  \item Age. Number of growth bands determined from vertebral analysis
+  \item Length. Total Length in mm determined via back-calculation
 }
 }
 \keyword{datasets}
