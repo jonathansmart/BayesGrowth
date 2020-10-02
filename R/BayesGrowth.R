@@ -4,6 +4,10 @@
 #' @author Jonathan Smart
 #' @description A package to estimate length-at-age using MCMC using rjags models
 #' @docType package
+#' @import(Rcpp)
+#' @import(methods)
+#' @importFrom(rstan, sampling)
+#' @useDynLib(BayesGrowth, .registration = TRUE)
 NULL
 
 globalVariables(c( "Age", "LAA", "Parameter", "Penalised deviance", "Value", "quantile", "sd", "sigma"))

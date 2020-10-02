@@ -4,9 +4,22 @@
 \alias{Estimate_MCMC_Growth}
 \title{Estimate_MCMC_Growth}
 \usage{
-Estimate_MCMC_Growth(data, Model = NULL, Linf = NULL, Linf.se = NULL,
-  L0 = NULL, L0.se = NULL, k.max = NULL, sigma.max = NULL,
-  iter = 10000, BurnIn = 1000, n.chains = 4, thin = 1)
+Estimate_MCMC_Growth(
+  data,
+  Model = NULL,
+  Linf = NULL,
+  Linf.se = NULL,
+  L0 = NULL,
+  L0.se = NULL,
+  k.max = NULL,
+  sigma.max = NULL,
+  iter = 10000,
+  BurnIn = 1000,
+  n_cores = 1,
+  n.chains = 4,
+  thin = 1,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{data}{A data.frame that contains columns named 'Age' and "Length'. The function can
@@ -38,28 +51,32 @@ length-at-age residuals.}
 \item{iter}{How many MCMC iterations should be run? Default is 10000 but fewer can be useful to
 avoid longer run times when testing code or data}
 
-\item{BurnIn}{The number of iterations at the begining of each chain to discard ('Burn in') to
+\item{BurnIn}{The number of iterations at the beginning of each chain to discard ('Burn in') to
 avoid biased values from starting values that do not resemble the target distribution.
 Default is 1000.}
 
+\item{n_cores}{The number of cores to be used for parallel processing. It should be 1 core less than the
+maximum number available.}
+
 \item{n.chains}{Number of MCMC chains to be run. Default is 4.}
 
-\item{thin}{The thinning of the MCMC simulations. Deafault is 1 which means no thinning occurs.
+\item{thin}{The thinning of the MCMC simulations. Default is 1 which means no thinning occurs.
 Thinning is generally only necessary for complicated models as it increases run time.}
+
+\item{verbose}{TRUE or FALSE: flag indicating whether to print intermediate output from Stan on the console,
+which might be helpful for model debugging.}
 }
 \value{
-An object of class 'mcmc.list'. This is the rjags object that returns a list of
-    MCMC outputs from the rjags model. Each list element is the results of each thinned
-    simulation from each chain.
+An object of class 'stanfit' from the rstan package.
 }
 \description{
-A wrapper function that creates a JAGS model using the rjags package.
-    The data and priors provided are combined into an rjags model that estimates a length-at-age
-    model with a normal distribution. Three different growth models can be used: a von Bertalanffy
-    model, Gompertz model or a logistic model. The prior on Linf and L0 are normally distributed
-    and determined through the user providing a mean and se for eacd parameter. The growth completion
-    parameter or any model (k) has a uniform prior which only requires an upper bound with the
-    lower bound set at zero. Sigma is the residual variance of the data around the model and
-    is set up in the same manner as 'k'. The growth estimates in the model are truncated to
-    remain above zero so negative growth cannot occur.
+A wrapper function that creates a Stan MCMC model using the rstan package.
+The data and priors provided are combined into an rstan model that estimates a length-at-age
+model with a normal distribution. Three different growth models can be used: a von Bertalanffy
+model, Gompertz model or a logistic model. The prior on Linf and L0 are normally distributed
+and determined through the user providing a mean and se for each parameter. The growth completion
+parameter for any model (k) has a uniform prior which only requires an upper bound with the
+lower bound set at zero. Sigma is the residual variance of the data around the model and
+is set up in the same manner as 'k'. The growth estimates in the model are truncated to
+remain above zero so negative growth cannot occur.
 }

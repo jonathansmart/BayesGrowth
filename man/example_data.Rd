@@ -4,7 +4,9 @@
 \name{example_data}
 \alias{example_data}
 \title{Example length-at-age data}
-\format{A data frame with 509 rows and 2 variables}
+\format{
+A data frame with 509 rows and 2 variables
+}
 \usage{
 data(example_data)
 }
@@ -13,8 +15,8 @@ A dataset used as examples in the vignettes and for users to test code with
 }
 \details{
 \itemize{
-  \item Age. Number of growth bands determined from vertebral analysis
-  \item Length. Total Length in mm determined via back-calculation
+\item Age. Number of growth bands determined from vertebral analysis
+\item Length. Total Length in mm determined via back-calculation
 }
 }
 \keyword{datasets}

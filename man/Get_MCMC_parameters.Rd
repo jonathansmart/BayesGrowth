@@ -4,16 +4,17 @@
 \alias{Get_MCMC_parameters}
 \title{Get_MCMC_parameters}
 \usage{
-Get_MCMC_parameters(data)
+Get_MCMC_parameters(obj)
 }
 \arguments{
-\item{data}{n output from the Estimate_MCMC_Growth funtion or a similarly structure rjags output.
-Must be of class "mcmc.list"}
+\item{obj}{An output from the Estimate_MCMC_Growth function}
 }
 \value{
-A tibble with 5 columns that include each parameter and the results of their posterior distributions.
-    These include the mean, Standard deviation, lower 95th percentile and upper 95th percentile
+A data.frame with the posterior distributions for each parameter.
+These include the mean, Standard error of the mean, Standard deviationof the mean, median,
+95th percentiles, effective sample sizes and Rhat.
 }
 \description{
-Get parameter summary statistics from the outputs of a Estimate_MCMC_Growth object
+Get parameter summary statistics from the outputs of a Estimate_MCMC_Growth object. It is simplified set of
+results than is returned from summary(obj).
 }
