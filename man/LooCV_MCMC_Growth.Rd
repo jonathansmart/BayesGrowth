@@ -13,7 +13,7 @@ LooCV_MCMC_Growth(
   k.max = NULL,
   sigma.max = NULL,
   iter = 10000,
-  BurnIn = 1000,
+  BurnIn = iter * 0.1,
   n_cores = 1,
   n.chains = 4,
   thin = 1,

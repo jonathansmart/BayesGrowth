@@ -282,125 +282,7 @@ Estimate_MCMC_Growth <- function(data,  Model = NULL, Linf = NULL, Linf.se = NUL
   return(Growth_model)
 
 }
-# Estimate_MCMC_Growth <- function(data,  Model = NULL, Linf = NULL, Linf.se = NULL,
-#                                  L0 = NULL, L0.se = NULL, k.max = NULL, sigma.max = NULL,
-#                                  iter = 10000, BurnIn = iter*0.1, n_cores = 1,
-#                                  n.chains = 4, thin = 1,verbose = FALSE){
-#
-#   if(any(is.null(c(Linf, Linf.se, L0, L0.se, k.max, sigma.max)))) stop("At least one parameter or its error are not correctly specified")
-#   if(length(Model) != 1) stop("Only one growth model can be used in each function call")
-#   if(is.null(Model))stop("Growth model has not been specified")
-#
-#
-#   age_col <- grep("age", substr(tolower(names(data)),1,3))
-#   if(length(age_col) <1) stop("Age column heading could not be distinguished ")
-#   if(length(age_col) >1) stop("Multiple age columns detected. Remove unecessary variables or rename desired column to 'Age' ")
-#
-#   len_col <- grep("len|tl|lt|siz", substr(tolower(names(data)),1,3))
-#   if(length(len_col) <1) stop("Length column heading could not be distinguished ")
-#   if(length(len_col) >1) stop("Multiple length columns detected. Remove unecessary variables or rename desired column to 'Length' ")
-#
-#
-#   if(Linf.se == 0 | L0.se == 0) stop("L0 and Linf standard error priors cannot be zero")
-#   if(any(is.na(data))) stop("data contains NA's")
-#
-#   if(n_cores >  parallel::detectCores()-1) {
-#     n_cores <- 1
-#     message("Not enough cores available. Reseting to 1 core")
-#   }
-#
-#   Age <- data[,age_col]
-#   Length <- data[,len_col]
-#
-#   starting_parameters <- function(chain_id){
-#
-#     mean.age<-tapply(Length, round(Age), mean,na.rm = T)
-#     Lt1<-mean.age[2:length(mean.age)]
-#     Lt<-mean.age[1:length(mean.age)-1]
-#     model<-lm(Lt1 ~ Lt)
-#     k<- abs(-log(model$coef[2]))
-#     Linf<-abs(model$coef[1]/(1-model$coef[2]))
-#
-#     L0<-lm(mean.age ~ poly(as.numeric(names(mean.age)), 2, raw = TRUE))$coef[1]
-#
-#     return(list(Linf = Linf, L0 = L0, k = k, sigma = sigma.max/2))
-#   }
-#
-#   if(verbose == FALSE){
-#     text <- 0
-#   }else{
-#     text <- iter/10
-#   }
-#
-#   priors <- c(Linf, L0, k.max, sigma.max)
-#   priors_se <- c(Linf.se, L0.se)
-#
-#   dat <- list(n = length(Age),
-#               Age = Age,
-#               Length = Length,
-#               priors = priors,
-#               priors_se = priors_se)
-#
-#   if(Model == "VB"){
-#     Growth_model <- rstan::stan(file= "Vb_stan_model.stan",
-#                                 data = dat,
-#                                 init = starting_parameters,
-#                                 control = list(adapt_delta = 0.9),
-#                                 warmup = BurnIn,
-#                                 thin = thin,
-#                                 verbose = verbose,
-#                                 iter = iter,
-#                                 cores = n_cores,
-#                                 open_progress = FALSE,
-#                                 refresh = text,
-#                                 model_name = "Von Bertalanffy",
-#                                 include = TRUE,
-#                                 pars = c("Linf", "k","L0", "sigma"),
-#                                 chains=n.chains)
-#
-#   } else if(Model == "Gom"){
-#     Growth_model <- stan(file= "Gompertz_stan_model.stan",
-#                          data = dat,
-#                          init = starting_parameters,
-#                          control = list(adapt_delta = 0.9),
-#                          warmup = BurnIn,
-#                          thin = thin,
-#                          verbose = verbose,
-#                          iter = iter,
-#                          cores = n_cores,
-#                          open_progress = FALSE,
-#                          refresh = text,
-#                          include = TRUE,
-#                          pars = c("Linf", "k","L0", "sigma"),
-#                          chains=n.chains)
-#
-#   } else if(Model == "Log"){
-#     Growth_model <- stan(file= "Logistic_stan_model.stan",
-#                          data = dat,
-#                          init = starting_parameters,
-#                          control = list(adapt_delta = 0.9),
-#                          warmup = BurnIn,
-#                          thin = thin,
-#                          verbose = verbose,
-#                          iter = iter,
-#                          open_progress = FALSE,
-#                          refresh = text,
-#                          cores = n_cores,
-#                          include = TRUE,
-#                          pars = c("Linf", "k","L0", "sigma"),
-#                          chains=n.chains)
-#
-#
-#   } else{
-#     stop("Model must be specified as either'VB', 'Log' or 'Gom'")
-#   }
-#
-#
-#
-#
-#   return(Growth_model)
-#
-# }
+
 #' LooCV_MCMC_Growth
 #' @description Conduct growth model selection using 'Leave One Out' (LOO) cross validation analysis for three growth models
 #'     (von Bertalanffy, Gompertz and Logistic) using the same prior parameters for each.
@@ -438,7 +320,7 @@ Estimate_MCMC_Growth <- function(data,  Model = NULL, Linf = NULL, Linf.se = NUL
 #' @export
 LooCV_MCMC_Growth <- function(data,   Linf = NULL, Linf.se = NULL,
                               L0 = NULL, L0.se = NULL, k.max = NULL, sigma.max = NULL,
-                              iter = 10000, BurnIn = 1000, n_cores = 1,
+                              iter = 10000, BurnIn = iter*0.1, n_cores = 1,
                               n.chains = 4, thin = 1,verbose = FALSE){
 
 
