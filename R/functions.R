@@ -1,10 +1,10 @@
 #' Estimate_MCMC_Growth
-#' @description A wrapper function that creates a JAGS model using the rjags package.
-#'     The data and priors provided are combined into an rjags model that estimates a length-at-age
+#' @description A wrapper function that creates a Stan MCMC model using the rstan package.
+#'     The data and priors provided are combined into an rstan model that estimates a length-at-age
 #'     model with a normal distribution. Three different growth models can be used: a von Bertalanffy
 #'     model, Gompertz model or a logistic model. The prior on Linf and L0 are normally distributed
-#'     and determined through the user providing a mean and se for eacd parameter. The growth completion
-#'     parameter or any model (k) has a uniform prior which only requires an upper bound with the
+#'     and determined through the user providing a mean and se for each parameter. The growth completion
+#'     parameter for any model (k) has a uniform prior which only requires an upper bound with the
 #'     lower bound set at zero. Sigma is the residual variance of the data around the model and
 #'     is set up in the same manner as 'k'. The growth estimates in the model are truncated to
 #'     remain above zero so negative growth cannot occur.
@@ -28,24 +28,24 @@
 #'     length-at-age residuals.
 #' @param iter How many MCMC iterations should be run? Default is 10000 but fewer can be useful to
 #'     avoid longer run times when testing code or data
-#' @param BurnIn The number of iterations at the begining of each chain to discard ('Burn in') to
+#' @param BurnIn The number of iterations at the beginning of each chain to discard ('Burn in') to
 #'     avoid biased values from starting values that do not resemble the target distribution.
 #'     Default is 1000.
 #' @param n.chains Number of MCMC chains to be run. Default is 4.
-#' @param thin The thinning of the MCMC simulations. Deafault is 1 which means no thinning occurs.
+#' @param thin The thinning of the MCMC simulations. Default is 1 which means no thinning occurs.
 #'     Thinning is generally only necessary for complicated models as it increases run time.
-#' @import dplyr rjags
+#' @param n_cores The number of cores to be used for parallel processing. It should be 1 core less than the
+#'     maximum number available.
+#' @param verbose TRUE or FALSE: flag indicating whether to print intermediate output from Stan on the console,
+#'     which might be helpful for model debugging.
+#' @import dplyr rstan
 #'
-#' @return An object of class 'mcmc.list'. This is the rjags object that returns a list of
-#'     MCMC outputs from the rjags model. Each list element is the results of each thinned
-#'     simulation from each chain.
-#'
+#' @return An object of class 'stanfit' from the rstan package.
 #' @export
-
 Estimate_MCMC_Growth <- function(data,  Model = NULL, Linf = NULL, Linf.se = NULL,
                                  L0 = NULL, L0.se = NULL, k.max = NULL, sigma.max = NULL,
-                                 iter = 10000, BurnIn = 1000,
-                                 n.chains = 4, thin = 1){
+                                 iter = 10000, BurnIn = 1000, n_cores = 1,
+                                 n.chains = 4, thin = 1,verbose = FALSE){
 
   if(any(is.null(c(Linf, Linf.se, L0, L0.se, k.max, sigma.max)))) stop("At least one parameter or its error are not correctly specified")
   if(length(Model) != 1) stop("Only one growth model can be used in each function call")
@@ -64,82 +64,106 @@ Estimate_MCMC_Growth <- function(data,  Model = NULL, Linf = NULL, Linf.se = NUL
   if(Linf.se == 0 | L0.se == 0) stop("L0 and Linf standard error priors cannot be zero")
   if(any(is.na(data))) stop("data contains NA's")
 
+  if(n_cores >  parallel::detectCores()-1) {
+    n_cores <- 1
+    message("Not enough cores available. Reseting to 1 core")
+  }
 
   Age <- data[,age_col]
   Length <- data[,len_col]
 
+  starting_parameters <- function(chain_id){
+
+    mean.age<-tapply(Length, round(Age), mean,na.rm = T)
+    Lt1<-mean.age[2:length(mean.age)]
+    Lt<-mean.age[1:length(mean.age)-1]
+    model<-lm(Lt1 ~ Lt)
+    k<- abs(-log(model$coef[2]))
+    Linf<-abs(model$coef[1]/(1-model$coef[2]))
+
+    L0<-lm(mean.age ~ poly(as.numeric(names(mean.age)), 2, raw = TRUE))$coef[1]
+
+    return(list(Linf = Linf, L0 = L0, k = k, sigma = sigma.max/2))
+  }
+
+  if(verbose == FALSE){
+    text <- 0
+  }else{
+    text <- iter/10
+  }
+
+  priors <- c(Linf, L0, k.max, sigma.max)
+  priors_se <- c(Linf.se, L0.se)
+
+  dat <- list(n = length(Age),
+              Age = Age,
+              Length = Length,
+              priors = priors,
+              priors_se = priors_se)
 
   if(Model == "VB"){
-    Growth_model <- paste0(
-      "model{
-      # Likelihood model for Length[i]
-      for(i in 1:length(Length)) {
-      Length[i] ~ dnorm(Lt[i], sigma^(-2))
-      Lt[i] <- Linf-(Linf-L0)*exp(-k*Age[i])
-      }
+    Growth_model <- rstan::stan(file= "Vb_stan_model.stan",
+                                data = dat,
+                                init = starting_parameters,
+                                control = list(adapt_delta = 0.9),
+                                warmup = BurnIn,
+                                thin = thin,
+                                verbose = verbose,
+                                iter = iter,
+                                cores = n_cores,
+                                open_progress = FALSE,
+                                refresh = text,
+                                model_name = "Von Bertalanffy",
+                                include = TRUE,
+                                pars = c("Linf", "k","L0", "sigma"),
+                                chains=n.chains)
 
-      # Prior models for a, b, s
-      Linf ~ dnorm(",Linf,",",Linf.se,"^(-2))
-      k ~ dunif(0,",k.max,")#,
-      # L0_dist,
-      L0 ~ dnorm(",L0,",",L0.se,"^(-2)) T(0,",max(Length),")
-      sigma ~ dunif(0,",sigma.max,")
-  }")
   } else if(Model == "Gom"){
-    Growth_model <- paste0(
-      "model{
-      # Likelihood model for Length[i]
-      for(i in 1:length(Length)) {
-      Length[i] ~ dnorm(Lt[i], sigma^(-2))
-      Lt[i] <-L0*exp(log(Linf/L0)*(1-exp(-k*Age[i])))
-      }
+    Growth_model <- stan(file= "Gompertz_stan_model.stan",
+                         data = dat,
+                         init = starting_parameters,
+                         control = list(adapt_delta = 0.9),
+                         warmup = BurnIn,
+                         thin = thin,
+                         verbose = verbose,
+                         iter = iter,
+                         cores = n_cores,
+                         open_progress = FALSE,
+                         refresh = text,
+                         include = TRUE,
+                         pars = c("Linf", "k","L0", "sigma"),
+                         chains=n.chains)
 
-      # Prior models for a, b, s
-      Linf ~ dnorm(",Linf,",",Linf.se,"^(-2))
-      k ~ dunif(0.0001,",k.max,")
-      L0 ~ dnorm(",L0,",",L0.se,"^(-2)) T(0,",max(Length),")
-      sigma ~ dunif(0,",sigma.max,")
-}")
   } else if(Model == "Log"){
-    Growth_model <- paste0(
-      "model{
-      # Likelihood model for Length[i]
-      for(i in 1:length(Length)) {
-      Length[i] ~ dnorm(Lt[i], sigma^(-2))
-      Lt[i] <-(Linf*L0*exp(k*Age[i]))/(Linf+L0*(exp(k*Age[i])-1))
-      }
+    Growth_model <- stan(file= "Logistic_stan_model.stan",
+                         data = dat,
+                         init = starting_parameters,
+                         control = list(adapt_delta = 0.9),
+                         warmup = BurnIn,
+                         thin = thin,
+                         verbose = verbose,
+                         iter = iter,
+                         open_progress = FALSE,
+                         refresh = text,
+                         cores = n_cores,
+                         include = TRUE,
+                         pars = c("Linf", "k","L0", "sigma"),
+                         chains=n.chains)
 
-      # Prior models for a, b, s
-      Linf ~ dnorm(",Linf,",",Linf.se,"^(-2))
-      k ~ dunif(0.0001,",k.max,")
-      L0 ~ dnorm(",L0,",",L0.se,"^(-2)) T(0,",max(Length),")
-      sigma ~ dunif(0,",sigma.max,")
-      }")
+
   } else{
     stop("Model must be specified as either'VB', 'Log' or 'Gom'")
   }
 
-  Growth_jags <- rjags::jags.model(textConnection(Growth_model),
-                                   data = list(Age = Age, Length = Length),
-                                   n.chains = n.chains, n.adapt = BurnIn,
-                                   quiet=TRUE)
 
 
-  Growth_sim <- rjags::coda.samples(model = Growth_jags,
-                                    variable.names = c("Linf", "k", "L0", "sigma"),
-                                    n.iter = iter,
-                                    thin = thin)
 
-
-  return(Growth_sim)
+  return(Growth_model)
 
 }
-
-
-#' Calculate_DIC
-#' @description Deviance Information Criteria (DIC) are calculated for three growth models
-#'     (von Bertalanffy, Gompertz and Logistic) using the same prior parameters for each. These
-#'     are used for model selection.
+#' LooCV_MCMC_Growth
+#' @description Conduct growth model selection using 'Leave One Out' (LOO) cross validation analysis for three growth models
+#'     (von Bertalanffy, Gompertz and Logistic) using the same prior parameters for each.
 #' @param data A data.frame that contains columns named 'Age' and "Length'. The function can
 #'     detect columns with similar names. If age and length columns cannot be determined then
 #'     an error will occur. The dataset can have additional columns which will be ignored by
@@ -158,134 +182,141 @@ Estimate_MCMC_Growth <- function(data,  Model = NULL, Linf = NULL, Linf.se = NUL
 #'     length-at-age residuals.
 #' @param iter How many MCMC iterations should be run? Default is 10000 but fewer can be useful to
 #'     avoid longer run times when testing code or data
-#' @param BurnIn The number of iterations at the begining of each chain to discard ('Burn in') to
+#' @param BurnIn The number of iterations at the beginning of each chain to discard ('Burn in') to
 #'     avoid biased values from starting values that do not resemble the target distribution.
 #'     Default is 1000.
 #' @param n.chains Number of MCMC chains to be run. Default is 4.
-#' @param thin The thinning of the MCMC simulations. Deafault is 1 which means no thinning occurs.
+#' @param thin The thinning of the MCMC simulations. Default is 1 which means no thinning occurs.
 #'     Thinning is generally only necessary for complicated models as it increases run time.
+#' @param n_cores The number of cores to be used for parallel processing. It should be 1 core less than the
+#'     maximum number available.
+#' @param verbose TRUE or FALSE: flag indicating whether to print intermediate output from Stan on the console,
+#'     which might be helpful for model debugging.
+#' @import dplyr rstan loo
 #'
-#' @return A data.frame with the results of the DIC analysis for each model.
+#' @return An object of class 'compare.loo' from the 'loo_compare' function in the 'loo' package.
 #' @export
-Calculate_DIC <- function(data, Linf = NULL, Linf.se = NULL,
-                          L0 = NULL, L0.se = NULL, k.max = NULL, sigma.max = NULL,  iter = 10000,BurnIn = 1000,
-                          n.chains = 4, thin = iter/10){
+LooCV_MCMC_Growth <- function(data,   Linf = NULL, Linf.se = NULL,
+                              L0 = NULL, L0.se = NULL, k.max = NULL, sigma.max = NULL,
+                              iter = 10000, BurnIn = 1000, n_cores = 1,
+                              n.chains = 4, thin = 1,verbose = FALSE){
+
+
+  if(any(is.null(c(Linf, Linf.se, L0, L0.se, k.max, sigma.max)))) stop("At least one parameter or its error are not correctly specified")
 
 
   age_col <- grep("age", substr(tolower(names(data)),1,3))
   if(length(age_col) <1) stop("Age column heading could not be distinguished ")
   if(length(age_col) >1) stop("Multiple age columns detected. Remove unecessary variables or rename desired column to 'Age' ")
+
   len_col <- grep("len|tl|lt|siz", substr(tolower(names(data)),1,3))
   if(length(len_col) <1) stop("Length column heading could not be distinguished ")
   if(length(len_col) >1) stop("Multiple length columns detected. Remove unecessary variables or rename desired column to 'Length' ")
 
+
+  if(Linf.se == 0 | L0.se == 0) stop("L0 and Linf standard error priors cannot be zero")
+  if(any(is.na(data))) stop("data contains NA's")
+
+  if(n_cores >  parallel::detectCores()-1) {
+    n_cores <- 1
+    message("Not enough cores available. Reseting to 1 core")
+  }
+
   Age <- data[,age_col]
   Length <- data[,len_col]
 
+  starting_parameters <- function(chain_id){
+
+    mean.age<-tapply(Length, round(Age), mean,na.rm = T)
+    Lt1<-mean.age[2:length(mean.age)]
+    Lt<-mean.age[1:length(mean.age)-1]
+    model<-lm(Lt1 ~ Lt)
+    k<- abs(-log(model$coef[2]))
+    Linf<-abs(model$coef[1]/(1-model$coef[2]))
+
+    L0<-lm(mean.age ~ poly(as.numeric(names(mean.age)), 2, raw = TRUE))$coef[1]
+
+    return(list(Linf = Linf, L0 = L0, k = k, sigma = sigma.max/2))
+  }
+
+  priors <- c(Linf, L0, k.max, sigma.max)
+  priors_se <- c(Linf.se, L0.se)
+
+  dat <- list(n = length(Age),
+              Age = Age,
+              Length = Length,
+              priors = priors,
+              priors_se = priors_se)
+
+  VB_model <-
+    stan(file= "Vb_stan_model.stan",
+         data = dat,
+         init = starting_parameters,
+         control = list(adapt_delta = 0.9),
+         warmup = BurnIn,
+         thin = thin,
+         verbose = verbose,
+         open_progress = FALSE,
+         refresh = 0,
+         iter = iter,
+         cores = n_cores,
+         model_name = "Von Bertalanffy",
+         chains=n.chains)
 
 
-  VB_model <- paste0(
-    "model{
-    # Likelihood model for Length[i]
-    for(i in 1:length(Length)) {
-    Length[i] ~ dnorm(Lt[i], sigma^(-2))
-    Lt[i] <- Linf-(Linf-L0)*exp(-k*Age[i])
-    }
-
-    # Prior parameters
-    Linf ~ dnorm(",Linf,",",Linf.se,"^(-2))
-    k ~ dunif(0,",k.max,")#,
-    # L0_dist,
-    L0 ~ dnorm(",L0,",",L0.se,"^(-2)) T(0,",max(Length),")
-    sigma ~ dunif(0,",sigma.max,")
-}")
-
-  Gom_model <- paste0(
-    "model{
-    # Likelihood model for Length[i]
-    for(i in 1:length(Length)) {
-    Length[i] ~ dnorm(Lt[i], sigma^(-2))
-    Lt[i] <-L0*exp(log(Linf/L0)*(1-exp(-k*Age[i])))
-    }
-
-    # Prior parameters
-    Linf ~ dnorm(",Linf,",",Linf.se,"^(-2))
-    k ~ dunif(0.0001,",k.max,")
-    L0 ~ dnorm(",L0,",",L0.se,"^(-2)) T(0,",max(Length),")
-    sigma ~ dunif(0,",sigma.max,")
-    }")
-
-  Log_model <- paste0(
-    "model{
-    # Likelihood model for Length[i]
-    for(i in 1:length(Length)) {
-    Length[i] ~ dnorm(Lt[i], sigma^(-2))
-    Lt[i] <-(Linf*L0*exp(k*Age[i]))/(Linf+L0*(exp(k*Age[i])-1))
-    }
-
-    # Prior parameters
-    Linf ~ dnorm(",Linf,",",Linf.se,"^(-2))
-    k ~ dunif(0.0001,",k.max,")
-    L0 ~ dnorm(",L0,",",L0.se,"^(-2)) T(0,",max(Length),")
-    sigma ~ dunif(0,",sigma.max,")
-    }")
-
-  VB_jags <- rjags::jags.model(textConnection(VB_model),
-                               data = list(Age = Age, Length = Length),
-                               n.chains = n.chains, n.adapt = BurnIn,
-                               quiet=TRUE)
-  message("Running von Bertalanffy model \n")
-  VB_dic <- rjags::dic.samples(VB_jags, n.iter = iter, thin = thin, type = "pD")
-
-  Gom_jags <- rjags::jags.model(textConnection(Gom_model),
-                                data = list(Age = Age, Length = Length),
-                                n.chains = n.chains,n.adapt = BurnIn,
-                                quiet=TRUE)
-  message("Running Gompterz model \n")
-  Gom_dic <- rjags::dic.samples(Gom_jags, n.iter = iter, thin = thin, type = "pD")
+  Gom_model <- stan(file= "Gompertz_stan_model.stan",
+                    data = dat,
+                    init = starting_parameters,
+                    control = list(adapt_delta = 0.9),
+                    warmup = BurnIn,
+                    thin = thin,
+                    verbose = verbose,
+                    open_progress = FALSE,
+                    refresh = 0,
+                    iter = iter,
+                    cores = n_cores,
+                    model_name = "Gompertz",
+                    chains=n.chains)
 
 
-  Log_jags <- rjags::jags.model(textConnection(Log_model),
-                                data = list(Age = Age, Length = Length),
-                                n.chains = n.chains, n.adapt = BurnIn,
-                                quiet=TRUE)
-  message("Running Logistic model \n")
-  Log_dic <- rjags::dic.samples(Log_jags, n.iter = iter, thin = thin, type = "pD")
+  Logistic_model <- stan(file= "Logistic_stan_model.stan",
+                         data = dat,
+                         init = starting_parameters,
+                         control = list(adapt_delta = 0.9),
+                         warmup = BurnIn,
+                         thin = thin,
+                         verbose = verbose,
+                         open_progress = FALSE,
+                         refresh = 0,
+                         iter = iter,
+                         cores = n_cores,
+                         model_name = "Logistic",
+                         chains=n.chains)
 
+  VB_loo <- suppressWarnings(loo::loo(VB_model))
+  Gom_loo <- suppressWarnings(loo::loo(Gom_model))
+  Logistic_loo <- suppressWarnings(loo::loo(Logistic_model))
+  Loo_results <- loo::loo_compare(list(VB = VB_loo, Gompertz = Gom_loo, Logistic = Logistic_loo))
 
-
-  results <- data.frame(Model = c("VB", "Gom", "Log"),
-                        `Mean.deviance` = c(sum(VB_dic$deviance), sum(Gom_dic$deviance), sum(Log_dic$deviance)),
-                        penalty = c(sum(VB_dic$penalty), sum(Gom_dic$penalty), sum(Log_dic$penalty)))
-  results$`Penalised.deviance` <- results$`Mean.deviance`+results$penalty
-  colnames(results)<- c("Model", "Mean deviance", "pD", "Penalised deviance")
-  results <- dplyr::arrange(results, `Penalised deviance`)
-
-  return(results)
+  return(Loo_results)
 
 }
-
 #' Get_MCMC_parameters
-#' @description Get parameter summary statistics from the outputs of a Estimate_MCMC_Growth object
-#' @param data n output from the Estimate_MCMC_Growth funtion or a similarly structure rjags output.
-#'     Must be of class "mcmc.list"
-#'
-#' @return A tibble with 5 columns that include each parameter and the results of their posterior distributions.
-#'     These include the mean, Standard deviation, lower 95th percentile and upper 95th percentile
-#' @import tidyr
-#' @importFrom stats sd quantile
+#' @description Get parameter summary statistics from the outputs of a Estimate_MCMC_Growth object. It is simplified set of
+#'     results than is returned from summary(obj).
+#' @param obj An output from the Estimate_MCMC_Growth function
+#' @return A data.frame with the posterior distributions for each parameter.
+#'     These include the mean, Standard error of the mean, Standard deviationof the mean, median,
+#'     95th percentiles, effective sample sizes and Rhat.
+#' @import tibble
 #' @export
+#'
+Get_MCMC_parameters <-function(obj){
+  if(class(obj) != "stanfit") stop("`obj` must be a result returned from `Estimate_MCMC_Growth()`")
 
-Get_MCMC_parameters <-function(data){
-  if(class(data) != "mcmc.list") stop("`data` must be a result returned from `Estimate_MCMC_Growth()`")
-
-  processed_data <- plyr::ldply(data)
-  processed_data <- tidyr::gather(processed_data, Parameter, Value)
-  processed_data <- dplyr::group_by(processed_data, Parameter)
-  results <- dplyr::summarise(processed_data, mean = mean(Value),
-                              SD = sd(Value),
-                              `2.5%` =  quantile(Value, probs = 0.025),
-                              `97.5%` =  quantile(Value, probs = 0.975))
+  results <- as.data.frame(summary(obj,pars = c("Linf", "k","L0", "sigma"),
+                                   probs = c(0.025,0.5,0.975))$summary)
+  results <- tibble::rownames_to_column(results,var = "Parameter")
 
   return(results)
 
@@ -335,35 +366,35 @@ Calc_Gompertz_LAA <- function(Linf, k, L0, Age){
 
 
 #' Calculate_MCMC_growth_curve
-#' @description A mcmc.list object produced from Estimate_MCMC_Growth is converted to a dataframe
+#' @description A 'stan.fit' object produced from Estimate_MCMC_Growth is converted to a dataframe
 #'     and structured using requested quantiles. This function takes the list of MCMC results for multiple
 #'     chains, restructures them into a dataframe and calculates quantiles around length-at-age estimates.
 #'     The quantiles are produced using the tidybayes::mean_qi() function and this result is returned from the function.
 #'     This can be conveniently plotted in a ggplot using the geom_lineribbon() function provided in the tidybayes
 #'     package.
-#'
-#' @param data An output from the Estimate_MCMC_Growth funtion or a similarly structure rjags output.
-#'     Must be of class "mcmc.list"
+#' @param data An output from the Estimate_MCMC_Growth function
 #' @param Model The model used in the Estimate_MCMC_Growth object. Either "VB", "Gom" or "Log".
 #' @param max.age The max age to estimate growth up until.
 #' @param probs The percentiles of the results to return. Can be a single value or a vector of
 #'     values. A single quantile width is required rather than its range. For example, 50th
 #'     percentiles would be width = .5 which would return a lower percentile at .25 and an upper
 #'     percentile of .75.
-#' @importFrom plyr ldply
 #' @import tidybayes
 #'
 #' @return A tibble that has been formatted using  tidybayes::mean_qi(). This includes
 #'     variables: Age, LAA, .lower, .upper, .width, .point and .interval.
 #' @export
-Calculate_MCMC_growth_curve <- function(data, Model = NULL, max.age = NULL, probs = c(0.5,0.75,0.95)){
+Calculate_MCMC_growth_curve <- function(obj, Model = NULL, max.age = NULL, probs = c(0.5,0.75,0.95)){
 
-  if(class(data) != "mcmc.list") stop("`data` must be a result returned from `Estimate_MCMC_Growth()`")
   if(!Model %in% c("VB", "Gom", "Log")) stop("'Model must be one of either 'VB', 'Gom' or 'Log")
   if(is.null(max.age)) stop("Please specify max age")
 
-  processed_data <- plyr::ldply(data)
-  processed_data <- dplyr::select(processed_data, -sigma)
+  processed_data <- Get_MCMC_parameters(obj)
+  L0_sims <- rstan::extract(obj)$L0
+  Linf_sims <- rstan::extract(obj)$Linf
+  k_sims <- rstan::extract(obj)$k
+  processed_data <- data.frame(Linf = Linf_sims,k =  k_sims,L0 = L0_sims)
+
   processed_data <- dplyr::mutate(processed_data, sim = row_number())
   processed_data <- dplyr::left_join(processed_data, expand.grid(sim = processed_data$sim, Age = seq(0,max.age, 0.1)), by = "sim")
   processed_data <- dplyr::mutate(processed_data, LAA = dplyr::case_when(
@@ -377,10 +408,3 @@ Calculate_MCMC_growth_curve <- function(data, Model = NULL, max.age = NULL, prob
 
   return(results)
 }
-
-
-
-
-
-
-
