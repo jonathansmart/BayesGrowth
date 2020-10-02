@@ -72,7 +72,7 @@ fit
 
 Therefore, all of the diagnostics from the rstan library can be used. Some examples are the `pairs` and `extract` functions:
 
-```{r Diagnostics,message=FALSE,  fig.height = 10, fig.width = 8}
+```{r Diagnostics,message=FALSE,  fig.height = 6, fig.width = 8}
 library(tidyverse)
 library(rstan)
 
