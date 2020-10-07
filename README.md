@@ -43,8 +43,20 @@ if (!require("devtools")) {
   install.packages("devtools")
 }
 
-devtools::install_github("jonathansmart/BayesGrowth", dependencies = TRUE)
+devtools::install_github("jonathansmart/BayesGrowth")
 ```
+
+Or alternatively you can install the [latest
+release](https://github.com/jonathansmart/BayesGrowth/releases)
+manually. This can be useful as when downloading from github you’ll
+automatically build the package from the source. However, as the rstan
+models contain compiled code, this can lead to build errors without
+proper installs of devtools or Rtools.
+
+If you need to install the package manually (skipping the compiling) you
+can go to the latest release and downloadthe package file
+(‘BayesGrowth\_ver.zip’). This can then be installed from Rstudio
+using Packages -\> Install -\> Package Archive File (.zip, tar.gz).
 
 ## Usage
 
@@ -97,11 +109,11 @@ fit
 #> post-warmup draws per chain=4500, total post-warmup draws=18000.
 #> 
 #>           mean se_mean   sd     2.5%      25%      50%      75%    97.5% n_eff
-#> Linf    318.02    0.06 4.09   310.87   315.15   317.71   320.67   326.80  4738
-#> k         0.66    0.00 0.03     0.59     0.64     0.66     0.68     0.73  4804
-#> L0        0.00    0.00 0.00     0.00     0.00     0.00     0.00     0.00  7468
-#> sigma    24.33    0.01 0.87    22.75    23.71    24.29    24.90    26.15  5595
-#> lp__  -3933.92    0.02 1.46 -3937.58 -3934.67 -3933.60 -3932.83 -3932.06  4495
+#> Linf    318.01    0.07 4.26   310.62   315.00   317.71   320.63   327.29  4227
+#> k         0.66    0.00 0.04     0.59     0.64     0.66     0.68     0.73  4359
+#> L0        0.00    0.00 0.00     0.00     0.00     0.00     0.00     0.00  9147
+#> sigma    24.32    0.01 0.89    22.72    23.70    24.27    24.89    26.20  4655
+#> lp__  -3933.96    0.02 1.52 -3937.78 -3934.71 -3933.64 -3932.85 -3932.06  5102
 #>       Rhat
 #> Linf     1
 #> k        1
@@ -109,7 +121,7 @@ fit
 #> sigma    1
 #> lp__     1
 #> 
-#> Samples were drawn using NUTS(diag_e) at Fri Oct 02 16:58:35 2020.
+#> Samples were drawn using NUTS(diag_e) at Wed Oct 07 18:51:48 2020.
 #> For each parameter, n_eff is a crude measure of effective sample size,
 #> and Rhat is the potential scale reduction factor on split chains (at 
 #> convergence, Rhat=1).
