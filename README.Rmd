@@ -37,7 +37,7 @@ devtools::install_github("jonathansmart/BayesGrowth")
 
 Or alternatively you can install the [latest release](https://github.com/jonathansmart/BayesGrowth/releases) manually. This can be useful as when downloading from github you'll automatically build the package from the source. However, as the rstan models contain compiled code, this can lead to build errors without proper installs of devtools or Rtools.
 
-If you need to install the package manually (skipping the compiling) you can go to the latest release and downloadthe package file ('BayesGrowth_ver.zip'). This can then be installed from Rstudio using Packages -> Install -> Package Archive File (.zip, tar.gz).
+If you need to install the package manually (skipping the compiling) you can go to the latest release and download the package file ('BayesGrowth_ver.zip'). This can then be installed from Rstudio using Packages -> Install -> Package Archive File (.zip, tar.gz).
 
 ## Usage
 
