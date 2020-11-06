@@ -283,8 +283,9 @@ Estimate_MCMC_Growth <- function(data,  Model = NULL, Linf = NULL, Linf.se = NUL
 
 }
 
-#' LooCV_MCMC_Growth
-#' @description Conduct growth model selection using 'Leave One Out' (LOO) cross validation analysis for three growth models
+#' Compare_Growth_Models
+#' @description Conduct growth model selection using 'Leave One Out' (LOO) cross validation analysis and
+#'     Widely Applicable Information Criterion (WAIC)for three growth models:
 #'     (von Bertalanffy, Gompertz and Logistic) using the same prior parameters for each.
 #' @param data A data.frame that contains columns named 'Age' and "Length'. The function can
 #'     detect columns with similar names. If age and length columns cannot be determined then
@@ -316,12 +317,12 @@ Estimate_MCMC_Growth <- function(data,  Model = NULL, Linf = NULL, Linf.se = NUL
 #'     which might be helpful for model debugging.
 #' @import dplyr rstan loo
 #'
-#' @return An object of class 'compare.loo' from the 'loo_compare' function in the 'loo' package.
+#' @return A list with the results of LOO and WAIC as well as model weightings.
 #' @export
-LooCV_MCMC_Growth <- function(data,   Linf = NULL, Linf.se = NULL,
-                              L0 = NULL, L0.se = NULL, k.max = NULL, sigma.max = NULL,
-                              iter = 10000, BurnIn = iter*0.1, n_cores = 1,
-                              n.chains = 4, thin = 1,verbose = FALSE){
+Compare_Growth_Models <- function(data,   Linf = NULL, Linf.se = NULL,
+                                  L0 = NULL, L0.se = NULL, k.max = NULL, sigma.max = NULL,
+                                  iter = 10000, BurnIn = iter*0.1, n_cores = 1,
+                                  n.chains = 4, thin = 1,verbose = FALSE){
 
 
   if(any(is.null(c(Linf, Linf.se, L0, L0.se, k.max, sigma.max)))) stop("At least one parameter or its error are not correctly specified")
@@ -372,21 +373,6 @@ LooCV_MCMC_Growth <- function(data,   Linf = NULL, Linf.se = NULL,
 
   VB_model <-
     rstan::sampling(object = stanmodels$VB_stan_model,
-         data = dat,
-         init = starting_parameters,
-         control = list(adapt_delta = 0.9),
-         warmup = BurnIn,
-         thin = thin,
-         verbose = verbose,
-         open_progress = FALSE,
-         refresh = 0,
-         iter = iter,
-         cores = n_cores,
-
-         chains=n.chains)
-
-
-  Gom_model <- rstan::sampling(object = stanmodels$Gompertz_stan_model,
                     data = dat,
                     init = starting_parameters,
                     control = list(adapt_delta = 0.9),
@@ -397,30 +383,101 @@ LooCV_MCMC_Growth <- function(data,   Linf = NULL, Linf.se = NULL,
                     refresh = 0,
                     iter = iter,
                     cores = n_cores,
+
                     chains=n.chains)
 
 
-  Logistic_model <- rstan::sampling(object = stanmodels$Logistic_stan_model,
-                         data = dat,
-                         init = starting_parameters,
-                         control = list(adapt_delta = 0.9),
-                         warmup = BurnIn,
-                         thin = thin,
-                         verbose = verbose,
-                         open_progress = FALSE,
-                         refresh = 0,
-                         iter = iter,
-                         cores = n_cores,
-                         chains=n.chains)
+  Gom_model <- rstan::sampling(object = stanmodels$Gompertz_stan_model,
+                               data = dat,
+                               init = starting_parameters,
+                               control = list(adapt_delta = 0.9),
+                               warmup = BurnIn,
+                               thin = thin,
+                               verbose = verbose,
+                               open_progress = FALSE,
+                               refresh = 0,
+                               iter = iter,
+                               cores = n_cores,
+                               chains=n.chains)
 
+
+  Logistic_model <- rstan::sampling(object = stanmodels$Logistic_stan_model,
+                                    data = dat,
+                                    init = starting_parameters,
+                                    control = list(adapt_delta = 0.9),
+                                    warmup = BurnIn,
+                                    thin = thin,
+                                    verbose = verbose,
+                                    open_progress = FALSE,
+                                    refresh = 0,
+                                    iter = iter,
+                                    cores = n_cores,
+                                    chains=n.chains)
+
+  # Calculate loo
   VB_loo <- suppressWarnings(loo::loo(VB_model))
   Gom_loo <- suppressWarnings(loo::loo(Gom_model))
   Logistic_loo <- suppressWarnings(loo::loo(Logistic_model))
-  Loo_results <- loo::loo_compare(list(VB = VB_loo, Gompertz = Gom_loo, Logistic = Logistic_loo))
 
-  return(Loo_results)
+  # Get loo comparions
+  Loo_comp <- as.data.frame(loo::loo_compare(list(VB = VB_loo, Gompertz = Gom_loo, Logistic = Logistic_loo)))
+  Loo_comp <- tibble::rownames_to_column(Loo_comp, "Model")
+
+  # Get looic weights
+  model_list <- list(VB = VB_model, Gompertz =Gom_model, Logistic =Logistic_model)
+  log_lik_list <- lapply(model_list, loo::extract_log_lik)
+
+  looiW <- as.data.frame(
+    round(
+      as.matrix(
+        suppressWarnings(loo::loo_model_weights(
+          log_lik_list,
+          method = "stacking",
+          optim_control = list(reltol=1e-10))
+        ))
+      ,2)
+  )
+
+  colnames(looiW) <- "looic_Weight"
+  looiW <- tibble::rownames_to_column(looiW,"Model")
+
+  # combine all Looic results
+  Loo_results<- dplyr::left_join(Loo_comp, looiW,by = "Model")
+
+  # get waics
+  waic_VB <- suppressWarnings(loo::waic(loo::extract_log_lik(VB_model)))
+  waic_Gom <- suppressWarnings(loo::waic(loo::extract_log_lik(Gom_model)))
+  waic_Log <- suppressWarnings(loo::waic(loo::extract_log_lik(Logistic_model)))
+
+  # get Waic Weights
+  waics <- c(
+    waic_VB$estimates["elpd_waic", 1],
+    waic_Gom$estimates["elpd_waic", 1],
+    waic_Log$estimates["elpd_waic", 1]
+  )
+
+  # Get p_waics
+  p_waic <- round(c(
+    waic_VB$estimates["p_waic", 1],
+    waic_Gom$estimates["p_waic", 1],
+    waic_Log$estimates["p_waic", 1]
+  ),1)
+
+  # Combine WAIC results
+  waic_results <- data.frame(Model = c("VB", "Gompetrz", "Logistic"),WAIC = waics,p_waic = p_waic,`WAIC_weight`=round(waics/sum(waics),2))
+
+  # warning in case p_waic is too high
+  if(any(waic_results$p_waic>0.4))warning("At least one model has high p_WAIC values. It's reccomended looic values are used for model selection instead")
+
+  Results <-  list(LooIC = Loo_results, WAIC = waic_results)
+
+  return(Results)
 
 }
+
+
+
+
 #' Get_MCMC_parameters
 #' @description Get parameter summary statistics from the outputs of a Estimate_MCMC_Growth object. It is simplified set of
 #'     results than is returned from summary(obj).
@@ -431,15 +488,16 @@ LooCV_MCMC_Growth <- function(data,   Linf = NULL, Linf.se = NULL,
 #' @import tibble
 #' @export
 #'
-Get_MCMC_parameters <-function(obj){
-  if(class(obj) != "stanfit") stop("`obj` must be a result returned from `Estimate_MCMC_Growth()`")
+Get_MCMC_parameters <- function (obj)
+{
+  if (class(obj) != "stanfit")
+    stop("`obj` must be a result returned from `Estimate_MCMC_Growth()`")
+  results <- as.data.frame(summary(obj, pars = c("Linf", "k",
+                                                 "L0", "sigma"), probs = c(0.025, 0.5, 0.975))$summary)
 
-  results <- as.data.frame(summary(obj,pars = c("Linf", "k","L0", "sigma"),
-                                   probs = c(0.025,0.5,0.975))$summary)
-  results <- tibble::rownames_to_column(results,var = "Parameter")
-
+  results <- tibble::rownames_to_column(results, var = "Parameter")
+  results <- dplyr::mutate_at(results,.vars = -everything("Parameter"), .funs = ~round(.,2))
   return(results)
-
 }
 #' Calc_Logistic_LAA
 #'
