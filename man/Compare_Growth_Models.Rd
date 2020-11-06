@@ -15,6 +15,7 @@ Compare_Growth_Models(
   iter = 10000,
   BurnIn = iter * 0.1,
   n_cores = 1,
+  controls = NULL,
   n.chains = 4,
   thin = 1,
   verbose = FALSE
@@ -53,6 +54,8 @@ Default is 1000.}
 
 \item{n_cores}{The number of cores to be used for parallel processing. It should be 1 core less than the
 maximum number available.}
+
+\item{controls}{A named list of parameters to control the rstan models behaviour.}
 
 \item{n.chains}{Number of MCMC chains to be run. Default is 4.}
 
