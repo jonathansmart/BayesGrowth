@@ -18,7 +18,8 @@ Compare_Growth_Models(
   controls = NULL,
   n.chains = 4,
   thin = 1,
-  verbose = FALSE
+  verbose = FALSE,
+  stats = "LooIC"
 )
 }
 \arguments{
@@ -64,9 +65,11 @@ Thinning is generally only necessary for complicated models as it increases run 
 
 \item{verbose}{TRUE or FALSE: flag indicating whether to print intermediate output from Stan on the console,
 which might be helpful for model debugging.}
+
+\item{stats}{Which statistics should be returned: LooIC, WAIC or both (both will return a list)}
 }
 \value{
-A list with the results of LOO and WAIC as well as model weightings.
+A dataframe with the requested stats
 }
 \description{
 Conduct growth model selection using 'Leave One Out' (LOO) cross validation analysis and
