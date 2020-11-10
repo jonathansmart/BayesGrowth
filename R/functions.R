@@ -199,14 +199,15 @@ Estimate_MCMC_Growth <- function(data,  Model = NULL, Linf = NULL, Linf.se = NUL
 #'     maximum number available.
 #' @param verbose TRUE or FALSE: flag indicating whether to print intermediate output from Stan on the console,
 #'     which might be helpful for model debugging.
+#' @param stats Which statistics should be returned: LooIC, WAIC or both (both will return a list)
 #' @import dplyr rstan loo
 #'
-#' @return A list with the results of LOO and WAIC as well as model weightings.
+#' @return A dataframe with the requested stats
 #' @export
 Compare_Growth_Models <- function(data,   Linf = NULL, Linf.se = NULL,
                                   L0 = NULL, L0.se = NULL, k.max = NULL, sigma.max = NULL,
                                   iter = 10000, BurnIn = iter*0.1, n_cores = 1,controls = NULL,
-                                  n.chains = 4, thin = 1,verbose = FALSE){
+                                  n.chains = 4, thin = 1,verbose = FALSE, stats = "LooIC"){
 
 
   if(any(is.null(c(Linf, Linf.se, L0, L0.se, k.max, sigma.max)))) stop("At least one parameter or its error are not correctly specified")
@@ -231,6 +232,8 @@ Compare_Growth_Models <- function(data,   Linf = NULL, Linf.se = NULL,
 
   if(is.null(controls)) controls <- list(adapt_delta = 0.9)
 
+  if(!stats %in% c("LooIC", "WAIC", "both")) stop("stats must be specified as either'LooIC', 'WAIC' or 'both'")
+
   Age <- data[,age_col]
   Length <- data[,len_col]
 
@@ -246,6 +249,12 @@ Compare_Growth_Models <- function(data,   Linf = NULL, Linf.se = NULL,
     L0<-lm(mean.age ~ poly(as.numeric(names(mean.age)), 2, raw = TRUE))$coef[1]
 
     return(list(Linf = Linf, L0 = L0, k = k, sigma = sigma.max/2))
+  }
+
+  if(verbose == FALSE){
+    text <- 0
+  }else{
+    text <- iter/10
   }
 
   priors <- c(Linf, L0, k.max, sigma.max)
@@ -266,11 +275,13 @@ Compare_Growth_Models <- function(data,   Linf = NULL, Linf.se = NULL,
                     thin = thin,
                     verbose = verbose,
                     open_progress = FALSE,
-                    refresh = 0,
+                    # # refresh = 0,
+                    refresh = text,
                     iter = iter,
                     cores = n_cores,
 
                     chains=n.chains)
+
 
 
   Gom_model <- rstan::sampling(object = stanmodels$Gompertz_stan_model,
@@ -281,7 +292,8 @@ Compare_Growth_Models <- function(data,   Linf = NULL, Linf.se = NULL,
                                thin = thin,
                                verbose = verbose,
                                open_progress = FALSE,
-                               refresh = 0,
+                               # refresh = 0,
+                               refresh = text,
                                iter = iter,
                                cores = n_cores,
                                chains=n.chains)
@@ -295,7 +307,8 @@ Compare_Growth_Models <- function(data,   Linf = NULL, Linf.se = NULL,
                                     thin = thin,
                                     verbose = verbose,
                                     open_progress = FALSE,
-                                    refresh = 0,
+                                    # refresh = 0,
+                                    refresh = text,
                                     iter = iter,
                                     cores = n_cores,
                                     chains=n.chains)
@@ -350,12 +363,16 @@ Compare_Growth_Models <- function(data,   Linf = NULL, Linf.se = NULL,
   ),1)
 
   # Combine WAIC results
-  waic_results <- data.frame(Model = c("VB", "Gompetrz", "Logistic"),WAIC = waics,p_waic = p_waic,`WAIC_weight`=round(waics/sum(waics),2))
+  waic_results <- data.frame(Model = c("VB", "Gompertz", "Logistic"),WAIC = waics,p_waic = p_waic,`WAIC_weight`=round(waics/sum(waics),2))
 
-  # warning in case p_waic is too high
-  if(any(waic_results$p_waic>0.4))warning("At least one model has high p_WAIC values. It's reccomended looic values are used for model selection instead")
+  if(stats == "both"){
+    Results <-  list(LooIC = Loo_results, WAIC = waic_results)
+  } else if(stats == "LooIC") {
+    Results <-  Loo_results
+  }else if(stats == "WAIC") {
+    Results <-  waic_results
+  }
 
-  Results <-  list(LooIC = Loo_results, WAIC = waic_results)
 
   return(Results)
 

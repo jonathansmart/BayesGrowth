@@ -34,3 +34,24 @@ globalVariables(c( "Age", "LAA", "Parameter", "Penalised deviance", "Value", "qu
 NULL
 
 
+#' Example MCMC model outputs
+#'
+#' The results of an MCMC model used as examples in the vignettes and for users to test code with
+#'
+#' @docType data
+#' @keywords datasets
+#' @name MCMC_example_results
+#' @usage data(MCMC_example_results)
+#' @format An rstan model with the class stan.fit
+NULL
+
+#' Example MCMC model comparison outputs outputs
+#'
+#' The results of an MCMC model comparison used as examples in the vignettes and for users to test code with
+#'
+#' @docType data
+#' @keywords datasets
+#' @name MCMC_example_results
+#' @usage data(Looic_example_results)
+#' @format An dataframe with results of LooIC
+NULL
