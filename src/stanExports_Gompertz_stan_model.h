@@ -33,7 +33,7 @@ static int current_statement_begin__;
 stan::io::program_reader prog_reader__() {
     stan::io::program_reader reader;
     reader.add_event(0, 0, "start", "model_Gompertz_stan_model");
-    reader.add_event(55, 53, "end", "model_Gompertz_stan_model");
+    reader.add_event(54, 52, "end", "model_Gompertz_stan_model");
     return reader;
 }
 #include <stan_meta_header.hpp>
@@ -360,22 +360,22 @@ public:
             if (!include_gqs__ && !include_tparams__) return;
             if (!include_gqs__) return;
             // declare and define generated quantities
-            current_statement_begin__ = 49;
+            current_statement_begin__ = 48;
             validate_non_negative_index("log_lik", "n", n);
             Eigen::Matrix<double, Eigen::Dynamic, 1> log_lik(n);
             stan::math::initialize(log_lik, DUMMY_VAR__);
             stan::math::fill(log_lik, DUMMY_VAR__);
             // generated quantities statements
-            current_statement_begin__ = 50;
+            current_statement_begin__ = 49;
             for (int i = 1; i <= n; ++i) {
-                current_statement_begin__ = 51;
+                current_statement_begin__ = 50;
                 stan::model::assign(log_lik, 
                             stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
                             normal_log(get_base1(Length, i, "Length", 1), (L0 * stan::math::exp((stan::math::log((Linf / L0)) * (1 - stan::math::exp((-(k) * get_base1(Age, i, "Age", 1))))))), sigma), 
                             "assigning variable log_lik");
             }
             // validate, write generated quantities
-            current_statement_begin__ = 49;
+            current_statement_begin__ = 48;
             size_t log_lik_j_1_max__ = n;
             for (size_t j_1__ = 0; j_1__ < log_lik_j_1_max__; ++j_1__) {
                 vars__.push_back(log_lik(j_1__));

@@ -371,7 +371,7 @@ public:
                 current_statement_begin__ = 51;
                 stan::model::assign(log_lik, 
                             stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
-                            normal_log(get_base1(Length, i, "Length", 1), (((Linf * L0) * stan::math::exp((k * get_base1(Age, i, "Age", 1)))) / (Linf + (L0 * (stan::math::exp((k * get_base1(Age, i, "Age", 1))) - 1)))), sigma), 
+                            normal_log(get_base1(Length, i, "Length", 1), (Linf - ((Linf - L0) * stan::math::exp((-(k) * get_base1(Age, i, "Age", 1))))), sigma), 
                             "assigning variable log_lik");
             }
             // validate, write generated quantities
