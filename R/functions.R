@@ -82,7 +82,8 @@ Estimate_MCMC_Growth <- function(data,  Model = NULL, Linf = NULL, Linf.se = NUL
     Lt1<-mean.age[2:length(mean.age)]
     Lt<-mean.age[1:length(mean.age)-1]
     model<-lm(Lt1 ~ Lt)
-    k<- abs(-log(model$coef[2]))
+    k <- suppressWarnings(abs(-log(model$coef[2]))) #in case a nan occurs
+    k <- ifelse(is.nan(k),0.1,k) # in case a nan occurs
     Linf<-abs(model$coef[1]/(1-model$coef[2]))
 
     L0<-lm(mean.age ~ poly(as.numeric(names(mean.age)), 2, raw = TRUE))$coef[1]
@@ -243,7 +244,8 @@ Compare_Growth_Models <- function(data,   Linf = NULL, Linf.se = NULL,
     Lt1<-mean.age[2:length(mean.age)]
     Lt<-mean.age[1:length(mean.age)-1]
     model<-lm(Lt1 ~ Lt)
-    k<- abs(-log(model$coef[2]))
+    k <- suppressWarnings(abs(-log(model$coef[2]))) #in case a nan occurs
+    k <- ifelse(is.nan(k),0.1,k) # in case a nan occurs
     Linf<-abs(model$coef[1]/(1-model$coef[2]))
 
     L0<-lm(mean.age ~ poly(as.numeric(names(mean.age)), 2, raw = TRUE))$coef[1]
