@@ -91,6 +91,8 @@ Estimate_MCMC_Growth <- function(data,  Model = NULL, Linf = NULL, Linf.se = NUL
     return(list(Linf = Linf, L0 = L0, k = k, sigma = sigma.max/2))
   }
 
+  if(starting_parameters(1)$k >= k.max) stop("k.max is too low. Consider increasing it")
+
   if(verbose == FALSE){
     text <- 0
   }else{
@@ -252,6 +254,8 @@ Compare_Growth_Models <- function(data,   Linf = NULL, Linf.se = NULL,
 
     return(list(Linf = Linf, L0 = L0, k = k, sigma = sigma.max/2))
   }
+
+  if(starting_parameters(1)$k >= k.max) stop("k.max is too low. Consider increasing it")
 
   if(verbose == FALSE){
     text <- 0
