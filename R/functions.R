@@ -30,7 +30,7 @@
 #'     avoid longer run times when testing code or data
 #' @param BurnIn The number of iterations at the beginning of each chain to discard ('Burn in') to
 #'     avoid biased values from starting values that do not resemble the target distribution.
-#'     Default is 1000.
+#'     Default is iter/2.
 #' @param n.chains Number of MCMC chains to be run. Default is 4.
 #' @param controls A named list of parameters to control the rstan models behaviour.
 #' @param thin The thinning of the MCMC simulations. Default is 1 which means no thinning occurs.
@@ -45,7 +45,7 @@
 #' @export
 Estimate_MCMC_Growth <- function(data,  Model = NULL, Linf = NULL, Linf.se = NULL,
                                  L0 = NULL, L0.se = NULL, k.max = NULL, sigma.max = NULL,
-                                 iter = 10000, BurnIn = iter*0.1, n_cores = 1, controls = NULL,
+                                 iter = 10000, BurnIn = iter/2, n_cores = 1, controls = NULL,
                                  n.chains = 4, thin = 1,verbose = FALSE){
 
   if(any(is.null(c(Linf, Linf.se, L0, L0.se, k.max, sigma.max)))) stop("At least one parameter or its error are not correctly specified")
@@ -193,7 +193,7 @@ Estimate_MCMC_Growth <- function(data,  Model = NULL, Linf = NULL, Linf.se = NUL
 #'     avoid longer run times when testing code or data
 #' @param BurnIn The number of iterations at the beginning of each chain to discard ('Burn in') to
 #'     avoid biased values from starting values that do not resemble the target distribution.
-#'     Default is 1000.
+#'     Default is iter/2.
 #' @param n.chains Number of MCMC chains to be run. Default is 4.
 #' @param controls A named list of parameters to control the rstan models behaviour.
 #' @param thin The thinning of the MCMC simulations. Default is 1 which means no thinning occurs.
@@ -209,7 +209,7 @@ Estimate_MCMC_Growth <- function(data,  Model = NULL, Linf = NULL, Linf.se = NUL
 #' @export
 Compare_Growth_Models <- function(data,   Linf = NULL, Linf.se = NULL,
                                   L0 = NULL, L0.se = NULL, k.max = NULL, sigma.max = NULL,
-                                  iter = 10000, BurnIn = iter*0.1, n_cores = 1,controls = NULL,
+                                  iter = 10000, BurnIn = iter/2, n_cores = 1,controls = NULL,
                                   n.chains = 4, thin = 1,verbose = FALSE, stats = "LooIC"){
 
 

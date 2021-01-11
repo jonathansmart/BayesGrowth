@@ -14,7 +14,7 @@ Estimate_MCMC_Growth(
   k.max = NULL,
   sigma.max = NULL,
   iter = 10000,
-  BurnIn = iter * 0.1,
+  BurnIn = iter/2,
   n_cores = 1,
   controls = NULL,
   n.chains = 4,
@@ -54,7 +54,7 @@ avoid longer run times when testing code or data}
 
 \item{BurnIn}{The number of iterations at the beginning of each chain to discard ('Burn in') to
 avoid biased values from starting values that do not resemble the target distribution.
-Default is 1000.}
+Default is iter/2.}
 
 \item{n_cores}{The number of cores to be used for parallel processing. It should be 1 core less than the
 maximum number available.}
