@@ -319,28 +319,39 @@ Compare_Growth_Models <- function(data,   Linf = NULL, Linf.se = NULL,
                                     cores = n_cores,
                                     chains=n.chains)
 
+  model_list <- list(VB = VB_model, Gompertz =Gom_model, Logistic =Logistic_model)
+
+  # calculate R eff
+  r_eff_list <- lapply(model_list, function(x) {
+    ll_array <- extract_log_lik(x, merge_chains = FALSE)
+    relative_eff(exp(ll_array))
+  })
+
   # Calculate loo
-  VB_loo <- suppressWarnings(loo::loo(VB_model))
-  Gom_loo <- suppressWarnings(loo::loo(Gom_model))
-  Logistic_loo <- suppressWarnings(loo::loo(Logistic_model))
+  VB_loo <- suppressWarnings(loo::loo(VB_model,r_eff = r_eff_list[["VB"]], cores = n_cores))
+  Gom_loo <- suppressWarnings(loo::loo(Gom_model,r_eff = r_eff_list[["Gompertz"]], cores = n_cores))
+  Logistic_loo <- suppressWarnings(loo::loo(Logistic_model,r_eff = r_eff_list[["Logistic"]] , cores = n_cores))
 
   # Get loo comparions
   Loo_comp <- as.data.frame(loo::loo_compare(list(VB = VB_loo, Gompertz = Gom_loo, Logistic = Logistic_loo)))
   Loo_comp <- tibble::rownames_to_column(Loo_comp, "Model")
 
   # Get looic weights
-  model_list <- list(VB = VB_model, Gompertz =Gom_model, Logistic =Logistic_model)
   log_lik_list <- lapply(model_list, loo::extract_log_lik)
 
   looiW <- as.data.frame(
-    round(
-      as.matrix(
-        suppressWarnings(loo::loo_model_weights(
-          log_lik_list,
-          method = "stacking",
-          optim_control = list(reltol=1e-10))
-        ))
-      ,2)
+    round(digits = 2,
+          as.matrix(
+            suppressWarnings(
+              loo::loo_model_weights(
+                log_lik_list,
+                method = "pseudobma",
+                BB = FALSE,
+                r_eff_list = r_eff_list
+              )
+            )
+          )
+    )
   )
 
   colnames(looiW) <- "looic_Weight"
