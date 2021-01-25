@@ -323,7 +323,7 @@ Compare_Growth_Models <- function(data,   Linf = NULL, Linf.se = NULL,
 
   # calculate R eff
   r_eff_list <- lapply(model_list, function(x) {
-    ll_array <- extract_log_lik(x, merge_chains = FALSE)
+    ll_array <- loo::extract_log_lik(x, merge_chains = FALSE)
     relative_eff(exp(ll_array))
   })
 
