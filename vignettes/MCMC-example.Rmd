@@ -136,16 +136,16 @@ The `Calculate_MCMC_growth_curve` function will provide confidence intervals aro
 ```{r plot,message=FALSE, fig.height = 6, fig.width = 8, warning=FALSE}
 
 # Return a growth curve with 50th and 95th percentiles
-growth_curve <- Calculate_MCMC_growth_curve(MCMC_example_results, Model = "VB",
+growth_curve <- Calculate_MCMC_growth_curve(obj = MCMC_example_results, Model = "VB",
                                             max.age = max(example_data$Age), probs = c(.5,.95))
 library(tidybayes)
 library(ggplot2)
 
 ggplot(growth_curve, aes(Age, LAA))+
   geom_point(data = example_data, aes(Age, Length), alpha = .3)+
-  geom_lineribbon(aes(ymin = .lower, ymax =.upper), size = .8) +
-  labs(y = "Total Length (mm)", x = "Age (yrs)")+
-  scale_fill_brewer(palette="BuPu", direction=-1)+
+geom_lineribbon(aes( ymin = .lower, ymax = .upper,
+                       fill = factor(.width)), size = .8) +  labs(y = "Total Length (mm)", x = "Age (yrs)")+
+  scale_fill_brewer(palette="BuPu", direction=1,name =NULL)+
   scale_y_continuous(expand = c(0,0))+
   scale_x_continuous(expand = c(0,0), breaks = seq(0,13,1))+
   theme_bw()+

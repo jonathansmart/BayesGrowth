@@ -76,17 +76,22 @@ Estimate_MCMC_Growth <- function(data,  Model = NULL, Linf = NULL, Linf.se = NUL
   Age <- data[,age_col]
   Length <- data[,len_col]
 
-  starting_parameters <- function(chain_id){
-
-    mean.age<-tapply(Length, round(Age), mean,na.rm = T)
-    Lt1<-mean.age[2:length(mean.age)]
-    Lt<-mean.age[1:length(mean.age)-1]
-    model<-lm(Lt1 ~ Lt)
-    k <- suppressWarnings(abs(-log(model$coef[2]))) #in case a nan occurs
-    k <- ifelse(is.nan(k),0.1,k) # in case a nan occurs
-    Linf<-abs(model$coef[1]/(1-model$coef[2]))
-
-    L0<-lm(mean.age ~ poly(as.numeric(names(mean.age)), 2, raw = TRUE))$coef[1]
+  starting_parameters <- function(chain_id) {
+    mean.age <- tapply(Length, round(Age), mean, na.rm = T)
+    Lt1 <- mean.age[2:length(mean.age)]
+    Lt <- mean.age[1:length(mean.age) - 1]
+    model <- lm(Lt1 ~ Lt)
+    k <- suppressWarnings(abs(-log(model$coef[2])))
+    Linf <- abs(model$coef[1]/(1 - model$coef[2]))
+    L0 <- lm(mean.age ~ poly(as.numeric(names(mean.age)),
+                             2, raw = TRUE))$coef[1]
+    L0 <- ifelse(L0 <0,1,L0)
+    L0 <- ifelse(is.na(L0), min(Length), L0)
+    Linf <- ifelse(Linf <0,max(Length),Linf)
+    Linf <- ifelse(is.na(Linf),max(Length),Linf)
+    k <- ifelse(k <0,0.1,k)
+    k <- ifelse(is.na(k), 0.1, k)
+    k <- ifelse(is.nan(k), 0.1, k)
 
     return(list(Linf = Linf, L0 = L0, k = k, sigma = sigma.max/2))
   }
@@ -120,7 +125,6 @@ Estimate_MCMC_Growth <- function(data,  Model = NULL, Linf = NULL, Linf.se = NUL
                                     cores = n_cores,
                                     open_progress = FALSE,
                                     refresh = text,
-                                    # model_name = "Von Bertalanffy",
                                     include = TRUE,
                                     pars = c("Linf", "k","L0", "sigma"),
                                     chains=n.chains)
@@ -240,17 +244,22 @@ Compare_Growth_Models <- function(data,   Linf = NULL, Linf.se = NULL,
   Age <- data[,age_col]
   Length <- data[,len_col]
 
-  starting_parameters <- function(chain_id){
-
-    mean.age<-tapply(Length, round(Age), mean,na.rm = T)
-    Lt1<-mean.age[2:length(mean.age)]
-    Lt<-mean.age[1:length(mean.age)-1]
-    model<-lm(Lt1 ~ Lt)
-    k <- suppressWarnings(abs(-log(model$coef[2]))) #in case a nan occurs
-    k <- ifelse(is.nan(k),0.1,k) # in case a nan occurs
-    Linf<-abs(model$coef[1]/(1-model$coef[2]))
-
-    L0<-lm(mean.age ~ poly(as.numeric(names(mean.age)), 2, raw = TRUE))$coef[1]
+  starting_parameters <- function(chain_id) {
+    mean.age <- tapply(Length, round(Age), mean, na.rm = T)
+    Lt1 <- mean.age[2:length(mean.age)]
+    Lt <- mean.age[1:length(mean.age) - 1]
+    model <- lm(Lt1 ~ Lt)
+    k <- suppressWarnings(abs(-log(model$coef[2])))
+    Linf <- abs(model$coef[1]/(1 - model$coef[2]))
+    L0 <- lm(mean.age ~ poly(as.numeric(names(mean.age)),
+                             2, raw = TRUE))$coef[1]
+    L0 <- ifelse(L0 <0,1,L0)
+    L0 <- ifelse(is.na(L0), min(Length), L0)
+    Linf <- ifelse(Linf <0,max(Length),Linf)
+    Linf <- ifelse(is.na(Linf),max(Length),Linf)
+    k <- ifelse(k <0,0.1,k)
+    k <- ifelse(is.na(k), 0.1, k)
+    k <- ifelse(is.nan(k), 0.1, k)
 
     return(list(Linf = Linf, L0 = L0, k = k, sigma = sigma.max/2))
   }
@@ -493,7 +502,7 @@ Calculate_MCMC_growth_curve <- function(obj, Model = NULL, max.age = NULL, probs
   k_sims <- rstan::extract(obj)$k
   processed_data <- data.frame(Linf = Linf_sims,k =  k_sims,L0 = L0_sims)
 
-  processed_data <- dplyr::mutate(processed_data, sim = row_number())
+  processed_data <- dplyr::mutate(processed_data, sim = dplyr::row_number())
   processed_data <- dplyr::left_join(processed_data, expand.grid(sim = processed_data$sim, Age = seq(0,max.age, 0.1)), by = "sim")
   processed_data <- dplyr::mutate(processed_data, LAA = dplyr::case_when(
     Model == "VB" ~ Calc_VBGF_LAA(Linf, k, L0, Age),
@@ -502,7 +511,7 @@ Calculate_MCMC_growth_curve <- function(obj, Model = NULL, max.age = NULL, probs
     TRUE ~ NA_real_
   ))
   processed_data <- dplyr::group_by(processed_data, Age)
-  results <-tidybayes::mean_qi(processed_data, LAA,.width = probs)
+  results <-suppressWarnings( tidybayes::mean_qi(processed_data, LAA,.width = probs) )
 
   return(results)
 }
