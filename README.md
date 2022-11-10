@@ -27,7 +27,7 @@ and
 have direct biological meaning as the size-at-birth and maximum length,
 respectively. This package provides the tools to run an MCMC model with
 these two parameters treated as size-at-birth and maximum length using a
-rstan model with a No U-Turn Sampling (NUTS) algorigthm. This MCMC model
+rstan model with a No U-Turn Sampling (NUTS) algorithm. This MCMC model
 is pre-specified and built into wrapper functions.
 
 The user can therefore run an MCMC growth model using knowledge of
@@ -55,8 +55,8 @@ proper installs of devtools or Rtools.
 
 If you need to install the package manually (skipping the compiling) you
 can go to the latest release and download the package file
-(‘BayesGrowth\_ver.zip’). This can then be installed from Rstudio
-using Packages -\> Install -\> Package Archive File (.zip, tar.gz).
+(‘BayesGrowth_ver.zip’). This can then be installed from Rstudio using
+Packages -\> Install -\> Package Archive File (.zip, tar.gz).
 
 ## Usage
 
@@ -105,15 +105,15 @@ The function returns the rstan outputs which is an object of class
 ``` r
 fit
 #> Inference for Stan model: VB_stan_model.
-#> 4 chains, each with iter=5000; warmup=500; thin=1; 
-#> post-warmup draws per chain=4500, total post-warmup draws=18000.
+#> 4 chains, each with iter=5000; warmup=2500; thin=1; 
+#> post-warmup draws per chain=2500, total post-warmup draws=10000.
 #> 
 #>           mean se_mean   sd     2.5%      25%      50%      75%    97.5% n_eff
-#> Linf    317.95    0.06 4.20   310.58   315.04   317.62   320.54   327.17  4299
-#> k         0.66    0.00 0.04     0.59     0.64     0.66     0.68     0.73  4534
-#> L0        0.00    0.00 0.00     0.00     0.00     0.00     0.00     0.00  7530
-#> sigma    24.31    0.01 0.89    22.70    23.69    24.26    24.87    26.19  5425
-#> lp__  -3933.96    0.02 1.52 -3937.77 -3934.72 -3933.60 -3932.84 -3932.06  4440
+#> Linf    318.07    0.09 4.23   310.73   315.13   317.73   320.63   327.36  2284
+#> k         0.66    0.00 0.04     0.59     0.64     0.66     0.68     0.73  2430
+#> L0        0.00    0.00 0.00     0.00     0.00     0.00     0.00     0.00  4253
+#> sigma    24.33    0.02 0.89    22.73    23.72    24.28    24.89    26.23  2703
+#> lp__  -3933.97    0.03 1.52 -3937.78 -3934.75 -3933.64 -3932.83 -3932.05  2571
 #>       Rhat
 #> Linf     1
 #> k        1
@@ -121,7 +121,7 @@ fit
 #> sigma    1
 #> lp__     1
 #> 
-#> Samples were drawn using NUTS(diag_e) at Wed Oct 07 18:57:10 2020.
+#> Samples were drawn using NUTS(diag_e) at Thu Nov 10 09:04:12 2022.
 #> For each parameter, n_eff is a crude measure of effective sample size,
 #> and Rhat is the potential scale reduction factor on split chains (at 
 #> convergence, Rhat=1).
@@ -132,6 +132,14 @@ Some examples are the `pairs` and `extract` functions:
 
 ``` r
 library(tidyverse)
+#> Warning: package 'tidyverse' was built under R version 4.0.5
+#> Warning: replacing previous import 'lifecycle::last_warnings' by
+#> 'rlang::last_warnings' when loading 'hms'
+#> Warning: package 'ggplot2' was built under R version 4.0.5
+#> Warning: package 'tibble' was built under R version 4.0.5
+#> Warning: package 'tidyr' was built under R version 4.0.5
+#> Warning: package 'dplyr' was built under R version 4.0.5
+#> Warning: package 'forcats' was built under R version 4.0.5
 library(rstan)
 
 pairs(fit, pars = c("Linf", "k","L0", "sigma"))
@@ -140,7 +148,6 @@ pairs(fit, pars = c("Linf", "k","L0", "sigma"))
 <img src="man/figures/README-Diagnostics-1.png" width="100%" />
 
 ``` r
-
 list_of_draws <- extract(fit,c("Linf", "k","L0", "sigma")) %>% 
   as.data.frame() %>% 
   gather(Parameter, Value) %>% 
@@ -164,7 +171,6 @@ means it can be passed straight into a ggplot with the
 `tidybayes::geom_line_ribbon` function.
 
 ``` r
-
 library(tidybayes)
 
 # Return a growth curve with 50th and 95th percentiles
@@ -174,7 +180,7 @@ growth_curve <- Calculate_MCMC_growth_curve(fit, Model = "VB",
 
 ggplot(growth_curve, aes(Age, LAA))+
   geom_point(data = example_data, aes(Age, Length), alpha = .3)+
-  geom_lineribbon(aes( ymin = .lower, ymax = .upper), size = .8) +
+  geom_lineribbon(aes( ymin = .lower, ymax = .upper, fill = factor(.width)), size = .8) +
   labs(y = "Total Length (mm)", x = "Age (yrs)")+
   scale_fill_brewer(palette="BuPu", direction=-1,name = "Credibility interval")+
   scale_y_continuous(expand = c(0,0))+

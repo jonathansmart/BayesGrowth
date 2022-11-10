@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
 [![DOI](https://zenodo.org/badge/223878432.svg)](https://zenodo.org/badge/latestdoi/223878432)
 <!-- badges: end -->
 
-BayesGrowth combines length-at-age modelling for fisheries with MCMC implemented using Stan and the [rstan](https://mc-stan.org/users/interfaces/rstan) package. Growth modelling using models such as the von Bertalanffy growth model involves three parameters: ![L_{\infty}](https://render.githubusercontent.com/render/math?math=L_%7B%5Cinfty%7D), *k* and either ![L_{0}](https://render.githubusercontent.com/render/math?math=L_%7B0%7D) or ![t_{0}](https://render.githubusercontent.com/render/math?math=t_%7B0%7D). Two of these parameters: ![L_{0}](https://render.githubusercontent.com/render/math?math=L_%7B0%7D) and ![L_{\infty}](https://render.githubusercontent.com/render/math?math=L_%7B%5Cinfty%7D) have direct biological meaning as the size-at-birth and maximum length, respectively. This package provides the tools to run an MCMC model with these two parameters treated as size-at-birth and maximum length using a rstan model with a No U-Turn Sampling (NUTS) algorigthm. This MCMC model is pre-specified and built into wrapper functions.
+BayesGrowth combines length-at-age modelling for fisheries with MCMC implemented using Stan and the [rstan](https://mc-stan.org/users/interfaces/rstan) package. Growth modelling using models such as the von Bertalanffy growth model involves three parameters: ![L_{\infty}](https://render.githubusercontent.com/render/math?math=L_%7B%5Cinfty%7D), *k* and either ![L_{0}](https://render.githubusercontent.com/render/math?math=L_%7B0%7D) or ![t_{0}](https://render.githubusercontent.com/render/math?math=t_%7B0%7D). Two of these parameters: ![L_{0}](https://render.githubusercontent.com/render/math?math=L_%7B0%7D) and ![L_{\infty}](https://render.githubusercontent.com/render/math?math=L_%7B%5Cinfty%7D) have direct biological meaning as the size-at-birth and maximum length, respectively. This package provides the tools to run an MCMC model with these two parameters treated as size-at-birth and maximum length using a rstan model with a No U-Turn Sampling (NUTS) algorithm. This MCMC model is pre-specified and built into wrapper functions.
 
 The user can therefore run an MCMC growth model using knowledge of species length-at-birth and maximum size as priors.
 
@@ -108,7 +108,7 @@ growth_curve <- Calculate_MCMC_growth_curve(fit, Model = "VB",
 
 ggplot(growth_curve, aes(Age, LAA))+
   geom_point(data = example_data, aes(Age, Length), alpha = .3)+
-  geom_lineribbon(aes( ymin = .lower, ymax = .upper), size = .8) +
+  geom_lineribbon(aes( ymin = .lower, ymax = .upper, fill = factor(.width)), size = .8) +
   labs(y = "Total Length (mm)", x = "Age (yrs)")+
   scale_fill_brewer(palette="BuPu", direction=-1,name = "Credibility interval")+
   scale_y_continuous(expand = c(0,0))+
