@@ -1,6 +1,6 @@
 #' BayesGrowth
 #'
-#' @description A DESCRIPTION OF THE PACKAGE
+#' @description A package to estimate fish length-at-age models using MCMC analysis with rstan models.
 #'
 #' @docType package
 #' @name BayesGrowth
