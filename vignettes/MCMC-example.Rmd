@@ -2,12 +2,12 @@
 title: "Estimate growth using MCMC"
 output: rmarkdown::html_vignette
 vignette: >
-%\VignetteIndexEntry{MCMC-example}
+  %\VignetteIndexEntry{MCMC-example}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-  ---
+---
   
-  ```{r, include = FALSE}
+```{r, include = FALSE}
 knitr::opts_chunk$set(
 collapse = TRUE,
 comment = "#>"
@@ -125,7 +125,7 @@ mcmc_acf(MCMC_example_results,pars = c("Linf", "k", "L0", "sigma"))
 
 # Other useful `BayesGrowth` functions
 
-Additional `BayesGrowth` functions are available that help the user manipulate the returned `Estimate_MCMC_Growth` object. For example `Get_MCMC_parameters` will return a tibble of parameter results and statistics as a more management object than `summary()`.
+Additional `BayesGrowth` functions are available that help the user manipulate the returned `Estimate_MCMC_Growth` object. For example `Get_MCMC_parameters` will return a tibble of parameter results and statistics as a more manageable object than `summary()`.
 
 ```{r pars,message=FALSE}
 Get_MCMC_parameters(MCMC_example_results)
