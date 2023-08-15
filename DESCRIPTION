@@ -17,6 +17,7 @@ Depends:
     R (>= 3.4.0)
 SystemRequirements: GNU make
 Imports: 
+    AquaticLifeHistory,
     dplyr,
     loo,
     methods,

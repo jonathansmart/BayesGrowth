@@ -25,14 +25,17 @@ The user can therefore run an MCMC growth model using knowledge of species lengt
 
 ## Installation
 
-You can install the released version of BayesGrowth from [Github](https://github.com/jonathansmart/BayesGrowth) with:
+You can install the released version of BayesGrowth from [Github](https://github.com/jonathansmart/BayesGrowth) using devtools. There is a vignette that runs an example and demonstrates how to examine diagnostic plots.
 
 ``` {r, eval = FALSE}
 if (!require("devtools")) {
   install.packages("devtools")
 }
 
-devtools::install_github("jonathansmart/BayesGrowth")
+devtools::install_github("jonathansmart/BayesGrowth", build_vignettes = TRUE)
+
+browseVignettes("BayesGrowth")
+
 ```
 
 Or alternatively you can install the [latest release](https://github.com/jonathansmart/BayesGrowth/releases) manually. This can be useful as when downloading from github you'll automatically build the package from the source. However, as the rstan models contain compiled code, this can lead to build errors without proper installs of devtools or Rtools.

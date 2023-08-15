@@ -36,14 +36,18 @@ species length-at-birth and maximum size as priors.
 ## Installation
 
 You can install the released version of BayesGrowth from
-[Github](https://github.com/jonathansmart/BayesGrowth) with:
+[Github](https://github.com/jonathansmart/BayesGrowth) using devtools.
+There is a vignette that runs an example and demonstrates how to examine
+diagnostic plots.
 
 ``` r
 if (!require("devtools")) {
   install.packages("devtools")
 }
 
-devtools::install_github("jonathansmart/BayesGrowth")
+devtools::install_github("jonathansmart/BayesGrowth", build_vignettes = TRUE)
+
+browseVignettes("BayesGrowth")
 ```
 
 Or alternatively you can install the [latest
@@ -109,11 +113,11 @@ fit
 #> post-warmup draws per chain=2500, total post-warmup draws=10000.
 #> 
 #>           mean se_mean   sd     2.5%      25%      50%      75%    97.5% n_eff
-#> Linf    318.07    0.09 4.23   310.73   315.13   317.73   320.63   327.36  2284
-#> k         0.66    0.00 0.04     0.59     0.64     0.66     0.68     0.73  2430
-#> L0        0.00    0.00 0.00     0.00     0.00     0.00     0.00     0.00  4253
-#> sigma    24.33    0.02 0.89    22.73    23.72    24.28    24.89    26.23  2703
-#> lp__  -3933.97    0.03 1.52 -3937.78 -3934.75 -3933.64 -3932.83 -3932.05  2571
+#> Linf    317.88    0.09 4.19   310.60   314.97   317.55   320.52   326.84  2164
+#> k         0.66    0.00 0.04     0.59     0.64     0.66     0.69     0.73  2236
+#> L0        0.00    0.00 0.00     0.00     0.00     0.00     0.00     0.00  5014
+#> sigma    24.30    0.02 0.88    22.66    23.70    24.25    24.86    26.12  2640
+#> lp__  -3933.93    0.03 1.52 -3937.80 -3934.64 -3933.58 -3932.83 -3932.03  2776
 #>       Rhat
 #> Linf     1
 #> k        1
@@ -121,7 +125,7 @@ fit
 #> sigma    1
 #> lp__     1
 #> 
-#> Samples were drawn using NUTS(diag_e) at Thu Nov 10 09:04:12 2022.
+#> Samples were drawn using NUTS(diag_e) at Wed Aug 16 09:10:54 2023.
 #> For each parameter, n_eff is a crude measure of effective sample size,
 #> and Rhat is the potential scale reduction factor on split chains (at 
 #> convergence, Rhat=1).
@@ -132,22 +136,33 @@ Some examples are the `pairs` and `extract` functions:
 
 ``` r
 library(tidyverse)
-#> Warning: package 'tidyverse' was built under R version 4.0.5
-#> Warning: replacing previous import 'lifecycle::last_warnings' by
-#> 'rlang::last_warnings' when loading 'hms'
-#> Warning: package 'ggplot2' was built under R version 4.0.5
-#> Warning: package 'tibble' was built under R version 4.0.5
-#> Warning: package 'tidyr' was built under R version 4.0.5
-#> Warning: package 'dplyr' was built under R version 4.0.5
-#> Warning: package 'forcats' was built under R version 4.0.5
+#> Warning: package 'tidyverse' was built under R version 4.2.3
+#> Warning: package 'ggplot2' was built under R version 4.2.3
+#> Warning: package 'tibble' was built under R version 4.2.3
+#> Warning: package 'tidyr' was built under R version 4.2.3
+#> Warning: package 'readr' was built under R version 4.2.3
+#> Warning: package 'purrr' was built under R version 4.2.3
+#> Warning: package 'dplyr' was built under R version 4.2.3
+#> Warning: package 'stringr' was built under R version 4.2.3
+#> Warning: package 'forcats' was built under R version 4.2.3
+#> Warning: package 'lubridate' was built under R version 4.2.3
 library(rstan)
+#> Warning: package 'rstan' was built under R version 4.2.3
+#> Warning: package 'StanHeaders' was built under R version 4.2.3
 
 pairs(fit, pars = c("Linf", "k","L0", "sigma"))
+#> Warning in par(usr): argument 1 does not name a graphical parameter
+#> Warning in par(usr): argument 1 does not name a graphical parameter
+
+#> Warning in par(usr): argument 1 does not name a graphical parameter
+
+#> Warning in par(usr): argument 1 does not name a graphical parameter
 ```
 
 <img src="man/figures/README-Diagnostics-1.png" width="100%" />
 
 ``` r
+
 list_of_draws <- extract(fit,c("Linf", "k","L0", "sigma")) %>% 
   as.data.frame() %>% 
   gather(Parameter, Value) %>% 
@@ -171,6 +186,7 @@ means it can be passed straight into a ggplot with the
 `tidybayes::geom_line_ribbon` function.
 
 ``` r
+
 library(tidybayes)
 
 # Return a growth curve with 50th and 95th percentiles
