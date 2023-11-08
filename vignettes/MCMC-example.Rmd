@@ -14,7 +14,7 @@ comment = "#>"
 )
 ```
 
-```{r setup}
+```{r setup, warning=FALSE, message=FALSE}
 library(BayesGrowth)
 ```
 
@@ -98,17 +98,16 @@ str(MCMC_example_results,max.level = 2)
 
 The chains of the MCMC model can be examined using a trace plot. The right hand panels show the chains for each parameter as they progress through the MCMC iterations. The left hand panels show the posterior distributions of each parameter. As this model is specified to have a normal distribution, all parameter posteriors should be normally distributed once convergence has been reached. $L_{0}$ is an exception as this parameter is truncated to remain above zero. Therefore, as $L_{0}$ approaches zero it will be right skewed. This plot shows good model convergence. All of the chains overlap and each of the parameters has the correct posterior distribution with a single mode.
 
-```{r Diagnostics,message=FALSE,  fig.height = 8, fig.width = 8}
+```{r Diagnostics, warning=FALSE, message=FALSE,  fig.height = 8, fig.width = 8}
 library(bayesplot)
 
 mcmc_combo(MCMC_example_results,pars = c("Linf", "k", "L0", "sigma")) 
 
-mcmc_trace(MCMC_example_results,pars = c("Linf", "k", "L0", "sigma"))
 ```
 
 Convergence can also be checked using a Gelman Rubin test. If all point estimates of the Gelman-Rubin diagnostic ($\hat{R}$) for each parameter are less than 1.2 then convergence has been reached. Ideally these should be close to one. If not, then the number of iterations should be increased. This result is returned as part of the `Estimate_MCMC_Growth` summary and can also be accessed using the `rhat` function. These can also be plotted using `mcmc_rhat`.
 
-```{r GelmabRubin,message=FALSE,  fig.height = 8, fig.width = 8}
+```{r GelmabRubin, warning=FALSE, message=FALSE,  fig.height = 6, fig.width = 8}
 rhats <- rhat(MCMC_example_results,pars = c("Linf", "k", "L0", "sigma"))
 
 mcmc_rhat(rhats)
@@ -119,7 +118,7 @@ mcmc_rhat(rhats)
 
 Autocorrelation can be examined using the `mcmc_acf` function in the `bayesplot` package. This plot shows the autocorrelation lag that occurs in the MCMC model for each parameter. If each parameter has an autocorrelation value of zero at the end of the lag series, then no autocorrelation has occurred.
 
-```{r Autocorr,message=FALSE,  fig.height = 8, fig.width = 8}
+```{r Autocorr, warning=FALSE, message=FALSE,  fig.height = 8, fig.width = 8}
 mcmc_acf(MCMC_example_results,pars = c("Linf", "k", "L0", "sigma"))
 ```
 
@@ -127,14 +126,13 @@ mcmc_acf(MCMC_example_results,pars = c("Linf", "k", "L0", "sigma"))
 
 Additional `BayesGrowth` functions are available that help the user manipulate the returned `Estimate_MCMC_Growth` object. For example `Get_MCMC_parameters` will return a tibble of parameter results and statistics as a more manageable object than `summary()`.
 
-```{r pars,message=FALSE}
+```{r pars, warning=FALSE, message=FALSE}
 Get_MCMC_parameters(MCMC_example_results)
 ```
 
 The `Calculate_MCMC_growth_curve` function will provide confidence intervals around the growth curve based on MCMC parameter percentiles. This is essentially a wrapper around the `tidybayes::mean_qi()` function which means it can be passed straight into a ggplot with the `tidybayes::geom_line_ribbon` function.
 
-```{r plot,message=FALSE, fig.height = 6, fig.width = 8, warning=FALSE}
-
+```{r plot, warning=FALSE, message=FALSE, fig.height = 6, fig.width = 8, warning=FALSE}
 # Return a growth curve with 50th and 95th percentiles
 growth_curve <- Calculate_MCMC_growth_curve(obj = MCMC_example_results, Model = "VB",
                                             max.age = max(example_data$Age), probs = c(.5,.95))
@@ -155,7 +153,7 @@ geom_lineribbon(aes( ymin = .lower, ymax = .upper,
 
 This represents a much improved fit over a standard non-linear estimated model, even if the length-at-birth were fixed at zero. Here the fit is compared using an nls model fit using the `AquaticLifeHistory` package (https://jonathansmart.github.io/AquaticLifeHistory/).
 
-```{r compare_plot,message=FALSE, fig.height = 6, fig.width = 8, warning=FALSE, echo=FALSE}
+```{r compare_plot, warning=FALSE, message=FALSE, fig.height = 6, fig.width = 8, echo=FALSE}
 
 library(AquaticLifeHistory)
 fixed_mod <- Estimate_Growth(example_data,n.bootstraps = 1, Birth.Len = 0, models = "VB", plots = FALSE)
@@ -192,9 +190,7 @@ The model with the highest LOOIC or WAIC weights provides the best fit to the da
 
 From these results we can see that the best fitting model was the Von Bertalanffy growth model. Note that this function does not check model convergence (a large number of warning messages suggests that one or more models has struggled to converge). Therefore, full diagnostics need to be run on the best fitting model. If the model configurations are updated to deal with issues such as autocorrelation then model comparisons and selection should be undertaken again.
 
-```{r DIC,message=FALSE, eval=FALSE}
-
-## need to run and save results to reduce runtime.
+```{r DIC, warning=FALSE, message=FALSE, eval=FALSE}
 Looic_example_results <- Compare_Growth_Models(data = example_data,
                                                stats = "LooIC",
                                                iter = 10000, 
@@ -212,7 +208,7 @@ Looic_example_results <- Compare_Growth_Models(data = example_data,
 
 ```
 
-```{r,echo=FALSE}
+```{r, warning=FALSE, message=FALSE,echo=FALSE}
 data("Looic_example_results")
 
 Looic_example_results

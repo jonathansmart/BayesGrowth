@@ -9,7 +9,7 @@ Authors@R: person("Jonathan", "Smart",
     comment = c(ORCID = "0000-0003-2070-3208"))
 Maintainer: Jonathan Smart <jonathan.smart@sa.gov.au>
 Description: A package to estimate fish length-at-age
-    models using MCMC analysis with rstan models.
+    models using MCMC analysis with rstan models. 
 License: GPL-3
 URL: https://github.com/jonathansmart/BayesGrowth
 BugReports: https://github.com/jonathansmart/BayesGrowth/issues
