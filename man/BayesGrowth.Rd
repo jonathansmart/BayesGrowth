@@ -5,7 +5,7 @@
 \alias{BayesGrowth}
 \title{BayesGrowth}
 \description{
-A DESCRIPTION OF THE PACKAGE
+A package to estimate fish length-at-age models using MCMC analysis with rstan models.
 }
 \references{
 Stan Development Team (2020). RStan: the R interface to Stan. R package version 2.19.3. https://mc-stan.org

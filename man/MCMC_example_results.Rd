@@ -6,17 +6,11 @@
 \title{Example MCMC model outputs}
 \format{
 An rstan model with the class stan.fit
-
-An dataframe with results of LooIC
 }
 \usage{
 data(MCMC_example_results)
-
-data(Looic_example_results)
 }
 \description{
 The results of an MCMC model used as examples in the vignettes and for users to test code with
-
-The results of an MCMC model comparison used as examples in the vignettes and for users to test code with
 }
 \keyword{datasets}

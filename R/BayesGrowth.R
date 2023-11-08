@@ -8,7 +8,10 @@
 #' @useDynLib BayesGrowth, .registration = TRUE
 #' @import methods
 #' @import Rcpp
-#' @importFrom rstan sampling
+#' @import rstantools
+#' @import RcppParallel
+#' @import bayesplot
+#' @import AquaticLifeHistory
 #'
 #' @references
 #' Stan Development Team (2020). RStan: the R interface to Stan. R package version 2.19.3. https://mc-stan.org
@@ -51,7 +54,7 @@ NULL
 #'
 #' @docType data
 #' @keywords datasets
-#' @name MCMC_example_results
+#' @name Looic_example_results
 #' @usage data(Looic_example_results)
 #' @format An dataframe with results of LooIC
 NULL

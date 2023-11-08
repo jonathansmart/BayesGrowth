@@ -40,6 +40,7 @@
 #' @param verbose TRUE or FALSE: flag indicating whether to print intermediate output from Stan on the console,
 #'     which might be helpful for model debugging.
 #' @import dplyr rstan
+#' @importFrom stats lm
 #'
 #' @return An object of class 'stanfit' from the rstan package.
 #' @export
@@ -419,7 +420,8 @@ Compare_Growth_Models <- function(data,   Linf = NULL, Linf.se = NULL,
 #'
 Get_MCMC_parameters <- function (obj)
 {
-  if (class(obj) != "stanfit")
+  # if (class(obj) != "stanfit")
+  if (!inherits(obj,"stanfit"))
     stop("`obj` must be a result returned from `Estimate_MCMC_Growth()`")
   results <- as.data.frame(summary(obj, pars = c("Linf", "k",
                                                  "L0", "sigma"), probs = c(0.025, 0.5, 0.975))$summary)
@@ -479,7 +481,7 @@ Calc_Gompertz_LAA <- function(Linf, k, L0, Age){
 #'     The quantiles are produced using the tidybayes::mean_qi() function and this result is returned from the function.
 #'     This can be conveniently plotted in a ggplot using the geom_lineribbon() function provided in the tidybayes
 #'     package.
-#' @param data An output from the Estimate_MCMC_Growth function
+#' @param obj An output from the Estimate_MCMC_Growth function
 #' @param Model The model used in the Estimate_MCMC_Growth object. Either "VB", "Gom" or "Log".
 #' @param max.age The max age to estimate growth up until.
 #' @param probs The percentiles of the results to return. Can be a single value or a vector of

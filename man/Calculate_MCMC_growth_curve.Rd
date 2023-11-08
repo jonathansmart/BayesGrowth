@@ -12,6 +12,8 @@ Calculate_MCMC_growth_curve(
 )
 }
 \arguments{
+\item{obj}{An output from the Estimate_MCMC_Growth function}
+
 \item{Model}{The model used in the Estimate_MCMC_Growth object. Either "VB", "Gom" or "Log".}
 
 \item{max.age}{The max age to estimate growth up until.}
@@ -20,8 +22,6 @@ Calculate_MCMC_growth_curve(
 values. A single quantile width is required rather than its range. For example, 50th
 percentiles would be width = .5 which would return a lower percentile at .25 and an upper
 percentile of .75.}
-
-\item{data}{An output from the Estimate_MCMC_Growth function}
 }
 \value{
 A tibble that has been formatted using  tidybayes::mean_qi(). This includes
