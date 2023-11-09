@@ -11,6 +11,7 @@
 #' @import rstantools
 #' @import RcppParallel
 #' @import bayesplot
+#' @import ggplot2
 #' @import AquaticLifeHistory
 #'
 #' @references

@@ -20,6 +20,7 @@ Imports:
     AquaticLifeHistory,
     bayesplot,
     dplyr,
+    ggplot2,
     loo,
     methods,
     Rcpp (>= 0.12.0),
