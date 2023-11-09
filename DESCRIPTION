@@ -26,11 +26,11 @@ Imports:
     Rcpp (>= 0.12.0),
     RcppParallel (>= 5.0.1),
     rstan (>= 2.18.1),
-    rstantools (>= 2.1.1),
+    rstantools (>= 2.3.1.1),
     stats,
     tibble,
     tidybayes
-Remotes:  
+Remotes: 
     jonathansmart/AquaticLifeHistory
 Suggests: 
     knitr,
