@@ -4,10 +4,10 @@ Title: Estimate fish growth using MCMC analysis
 Date: 2020
 Version: 0.3.6
 Authors@R: person("Jonathan", "Smart", 
-    email = "jonathan.smart@sa.gov.au", 
+    email = "jonsmartphd@gmail.com", 
     role = c("aut", "cre", "ctb"),
     comment = c(ORCID = "0000-0003-2070-3208"))
-Maintainer: Jonathan Smart <jonathan.smart@sa.gov.au>
+Maintainer: Jonathan Smart <jonsmartphd@gmail.com>
 Description: A package to estimate fish length-at-age
     models using MCMC analysis with rstan models. 
 License: GPL-3
