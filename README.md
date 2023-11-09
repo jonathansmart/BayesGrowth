@@ -8,6 +8,7 @@
 [![Travis build
 status](https://travis-ci.org/jonathansmart/BayesGrowth.svg?branch=master)](https://travis-ci.org/jonathansmart/BayesGrowth)
 [![DOI](https://zenodo.org/badge/223878432.svg)](https://zenodo.org/badge/latestdoi/223878432)
+[![R-CMD-check](https://github.com/jonathansmart/BayesGrowth/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jonathansmart/BayesGrowth/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 BayesGrowth combines length-at-age modelling for fisheries with MCMC
@@ -113,11 +114,11 @@ fit
 #> post-warmup draws per chain=2500, total post-warmup draws=10000.
 #> 
 #>           mean se_mean   sd     2.5%      25%      50%      75%    97.5% n_eff
-#> Linf    317.88    0.09 4.19   310.60   314.97   317.55   320.52   326.84  2164
-#> k         0.66    0.00 0.04     0.59     0.64     0.66     0.69     0.73  2236
-#> L0        0.00    0.00 0.00     0.00     0.00     0.00     0.00     0.00  5014
-#> sigma    24.30    0.02 0.88    22.66    23.70    24.25    24.86    26.12  2640
-#> lp__  -3933.93    0.03 1.52 -3937.80 -3934.64 -3933.58 -3932.83 -3932.03  2776
+#> Linf    317.88    0.08 4.12   310.57   315.07   317.59   320.42   326.76  2533
+#> k         0.66    0.00 0.03     0.59     0.64     0.66     0.68     0.73  2594
+#> L0        0.00    0.00 0.00     0.00     0.00     0.00     0.00     0.00  3684
+#> sigma    24.31    0.02 0.88    22.69    23.71    24.27    24.88    26.12  3066
+#> lp__  -3933.96    0.03 1.55 -3937.94 -3934.70 -3933.60 -3932.82 -3932.04  2361
 #>       Rhat
 #> Linf     1
 #> k        1
@@ -125,7 +126,7 @@ fit
 #> sigma    1
 #> lp__     1
 #> 
-#> Samples were drawn using NUTS(diag_e) at Wed Aug 16 09:10:54 2023.
+#> Samples were drawn using NUTS(diag_e) at Thu Nov  9 12:45:44 2023.
 #> For each parameter, n_eff is a crude measure of effective sample size,
 #> and Rhat is the potential scale reduction factor on split chains (at 
 #> convergence, Rhat=1).
@@ -136,22 +137,11 @@ Some examples are the `pairs` and `extract` functions:
 
 ``` r
 library(tidyverse)
-#> Warning: package 'tidyverse' was built under R version 4.2.3
-#> Warning: package 'ggplot2' was built under R version 4.2.3
-#> Warning: package 'tibble' was built under R version 4.2.3
-#> Warning: package 'tidyr' was built under R version 4.2.3
-#> Warning: package 'readr' was built under R version 4.2.3
-#> Warning: package 'purrr' was built under R version 4.2.3
-#> Warning: package 'dplyr' was built under R version 4.2.3
-#> Warning: package 'stringr' was built under R version 4.2.3
-#> Warning: package 'forcats' was built under R version 4.2.3
-#> Warning: package 'lubridate' was built under R version 4.2.3
 library(rstan)
-#> Warning: package 'rstan' was built under R version 4.2.3
-#> Warning: package 'StanHeaders' was built under R version 4.2.3
 
 pairs(fit, pars = c("Linf", "k","L0", "sigma"))
 #> Warning in par(usr): argument 1 does not name a graphical parameter
+
 #> Warning in par(usr): argument 1 does not name a graphical parameter
 
 #> Warning in par(usr): argument 1 does not name a graphical parameter
