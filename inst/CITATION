@@ -23,7 +23,7 @@ bibentry(
   journal = "PLOS ONE",
   year = "2021",
   volume = "16",
-  number = "2"
+  number = "2",
   pages = "e0246734",
   url = "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0246734",
   textVersion = paste("Modernising fish and shark growth curves with Bayesian length-at-age models
