@@ -1,0 +1,32 @@
+citHeader("To cite BayesGrowth use:")
+
+year <- sub("-.*", "", meta$Date)
+note <- sprintf("R package version %s", meta$Version)
+
+bibentry(
+  bibtype = "Manual",
+  title = "BayesGrowth: Estimate Fish Growth using MCMC Analysis",
+  author = c(person("Jonathan", "Smart")),
+  year = year,
+  note = note,
+  url = "https://github.com/jonathansmart/BayesGrowth",
+  textVersion = paste("Smart J", year,
+                      "BayesGrowth: Estimate Fish Growth using MCMC Analysis.",
+                      "https://github.com/jonathansmart/BayesGrowth")
+)
+
+bibentry(
+  bibtype = "Article",
+  author = c(as.person("Jonathan Smart"),
+                      as.person("Gretchen Grammer")),
+  title = "Modernising fish and shark growth curves with Bayesian length-at-age models",
+  journal = "PLOS ONE",
+  year = "2021",
+  volume = "16",
+  number = "2"
+  pages = "e0246734",
+  url = "https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0246734",
+  textVersion = paste("Modernising fish and shark growth curves with Bayesian length-at-age models
+Smart JJ, Grammer GL (2021) Modernising fish and shark growth curves with Bayesian length-at-age models. PLOS ONE 16(2): e0246734. https://doi.org/10.1371/journal.pone.0246734"")
+
+)
