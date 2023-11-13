@@ -1,7 +1,7 @@
 Type: Package
 Package: BayesGrowth
-Title: Estimate fish growth using MCMC analysis
-Date: 2020
+Title: Estimate Fish Growth using MCMC Analysis
+Date: 2023-11-13
 Version: 0.3.6
 Authors@R: person("Jonathan", "Smart", 
     email = "jonsmartphd@gmail.com", 

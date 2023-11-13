@@ -14,14 +14,14 @@
 #'     the function
 #' @param Model Which growth model should be run? Must be one of "VB", "Gom" or "Log" for von
 #'     Bertalanffy, Gompertz or Logistic models, respectively
-#' @param Linf The prior for asymptotic length. MUst be in the same unit (i.e. cm or mm) as the data.
+#' @param Linf The prior for asymptotic length. Must be in the same unit (i.e. cm or mm) as the data.
 #'     This should be based off of maximum size for the species.
 #' @param Linf.se The prior for normally distributed standard error around
-#'     asymptotic length. MUst be in the same unit (i.e. cm or mm) as the data. Cannot be zero.
-#' @param L0 The prior for length-at-birth. MUst be in the same unit (i.e. cm or mm) as the data.
+#'     asymptotic length. Must be in the same unit (i.e. cm or mm) as the data. Cannot be zero.
+#' @param L0 The prior for length-at-birth. Must be in the same unit (i.e. cm or mm) as the data.
 #'     This should be based off of minimum size for the species.
 #' @param L0.se The prior for normally distributed standard error around
-#'     length-at-birth. MUst be in the same unit (i.e. cm or mm) as the data. Cannot be zero.
+#'     length-at-birth. Must be in the same unit (i.e. cm or mm) as the data. Cannot be zero.
 #' @param k.max The maximum value to consider for the growth completion parameter 'k'. In
 #'     the Gompertz and Logistic models, this parameter is often notated as 'g' instead of 'k'.
 #' @param sigma.max The maximum value to consider for sigma. This is the variance around the
@@ -182,14 +182,14 @@ Estimate_MCMC_Growth <- function(data,  Model = NULL, Linf = NULL, Linf.se = NUL
 #'     detect columns with similar names. If age and length columns cannot be determined then
 #'     an error will occur. The dataset can have additional columns which will be ignored by
 #'     the function
-#' @param Linf The prior for asymptotic length. MUst be in the same unit (i.e. cm or mm) as the data.
+#' @param Linf The prior for asymptotic length. Must be in the same unit (i.e. cm or mm) as the data.
 #'     This should be based off of maximum size for the species.
 #' @param Linf.se The prior for normally distributed standard error around
-#'     asymptotic length. MUst be in the same unit (i.e. cm or mm) as the data. Cannot be zero.
-#' @param L0 The prior for length-at-birth. MUst be in the same unit (i.e. cm or mm) as the data.
+#'     asymptotic length. Must be in the same unit (i.e. cm or mm) as the data. Cannot be zero.
+#' @param L0 The prior for length-at-birth. Must be in the same unit (i.e. cm or mm) as the data.
 #'     This should be based off of minimum size for the species.
 #' @param L0.se The prior for normally distributed standard error around
-#'     length-at-birth. MUst be in the same unit (i.e. cm or mm) as the data. Cannot be zero.
+#'     length-at-birth. Must be in the same unit (i.e. cm or mm) as the data. Cannot be zero.
 #' @param k.max The maximum value to consider for the growth completion parameter 'k'. In
 #'     the Gompertz and Logistic models, this parameter is often notated as 'g' instead of 'k'.
 #' @param sigma.max The maximum value to consider for sigma. This is the variance around the
@@ -413,7 +413,7 @@ Compare_Growth_Models <- function(data,   Linf = NULL, Linf.se = NULL,
 #'     results than is returned from summary(obj).
 #' @param obj An output from the Estimate_MCMC_Growth function
 #' @return A data.frame with the posterior distributions for each parameter.
-#'     These include the mean, Standard error of the mean, Standard deviationof the mean, median,
+#'     These include the mean, Standard error of the mean, Standard deviation of the mean, median,
 #'     95th percentiles, effective sample sizes and Rhat.
 #' @import tibble
 #' @export
