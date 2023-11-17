@@ -5,8 +5,6 @@
 
 <!-- badges: start -->
 
-[![Travis build
-status](https://travis-ci.org/jonathansmart/BayesGrowth.svg?branch=master)](https://travis-ci.org/jonathansmart/BayesGrowth)
 [![DOI](https://zenodo.org/badge/223878432.svg)](https://zenodo.org/badge/latestdoi/223878432)
 [![R-CMD-check](https://github.com/jonathansmart/BayesGrowth/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jonathansmart/BayesGrowth/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
@@ -114,11 +112,11 @@ fit
 #> post-warmup draws per chain=2500, total post-warmup draws=10000.
 #> 
 #>           mean se_mean   sd     2.5%      25%      50%      75%    97.5% n_eff
-#> Linf    317.88    0.08 4.12   310.57   315.07   317.59   320.42   326.76  2533
-#> k         0.66    0.00 0.03     0.59     0.64     0.66     0.68     0.73  2594
-#> L0        0.00    0.00 0.00     0.00     0.00     0.00     0.00     0.00  3684
-#> sigma    24.31    0.02 0.88    22.69    23.71    24.27    24.88    26.12  3066
-#> lp__  -3933.96    0.03 1.55 -3937.94 -3934.70 -3933.60 -3932.82 -3932.04  2361
+#> Linf    318.07    0.08 4.18   310.76   315.17   317.73   320.61   327.37  2433
+#> k         0.66    0.00 0.03     0.59     0.64     0.66     0.68     0.73  2506
+#> L0        0.00    0.00 0.00     0.00     0.00     0.00     0.00     0.00  4382
+#> sigma    24.33    0.02 0.89    22.71    23.71    24.29    24.91    26.21  2806
+#> lp__  -3933.99    0.03 1.55 -3937.92 -3934.75 -3933.63 -3932.84 -3932.05  2681
 #>       Rhat
 #> Linf     1
 #> k        1
@@ -126,7 +124,7 @@ fit
 #> sigma    1
 #> lp__     1
 #> 
-#> Samples were drawn using NUTS(diag_e) at Thu Nov  9 12:45:44 2023.
+#> Samples were drawn using NUTS(diag_e) at Fri Nov 17 08:47:53 2023.
 #> For each parameter, n_eff is a crude measure of effective sample size,
 #> and Rhat is the potential scale reduction factor on split chains (at 
 #> convergence, Rhat=1).
