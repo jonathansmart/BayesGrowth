@@ -41,7 +41,27 @@
 #'     which might be helpful for model debugging.
 #' @import dplyr rstan
 #' @importFrom stats lm
+#' @examples
+#' \donttest{
+#' # load example data
+#' data("example_data")
+#' ## Biological info - lengths in mm
+#' max_size <- 440
+#' max_size_se <- 5
+#' birth_size <- 0
+#' birth_size_se <- 0.001 # an se cannot be zero
 #'
+#' # Use the function to estimate the rstan model
+#' fit <- Estimate_MCMC_Growth(data = example_data,
+#'                             Model = "VB" ,
+#'                             iter = 5000,
+#'                             Linf = max_size,
+#'                             Linf.se = max_size_se,
+#'                             L0 = birth_size,
+#'                             sigma.max = 100,
+#'                             L0.se = birth_size_se,
+#'                             k.max = 1)
+#' }
 #' @return An object of class 'stanfit' from the rstan package.
 #' @export
 Estimate_MCMC_Growth <- function(data,  Model = NULL, Linf = NULL, Linf.se = NULL,
@@ -209,7 +229,32 @@ Estimate_MCMC_Growth <- function(data,  Model = NULL, Linf = NULL, Linf.se = NUL
 #'     which might be helpful for model debugging.
 #' @param stats Which statistics should be returned: LooIC, WAIC or both (both will return a list)
 #' @import dplyr rstan loo
+#' @examples
+#' \donttest{
+#' # load example data
+#' data("example_data")
+#' ## Biological info - lengths in mm
+#' max_size <- 440
+#' max_size_se <- 5
+#' birth_size <- 0
+#' birth_size_se <- 0.001 # an se cannot be zero
 #'
+#' # Use the function to compare growth models with LooIC
+#' Looic_example_results <- Compare_Growth_Models(data = example_data,
+#'                                                stats = "LooIC",
+#'                                                iter = 10000,
+#'                                                n_cores = 3,
+#'                                                n.chains = 4,
+#'                                                BurnIn = 1000,
+#'                                                thin = 1,
+#'                                                Linf = max_size,
+#'                                                Linf.se = max_size_se,
+#'                                                L0 = birth_size,
+#'                                                L0.se = birth_size_se,
+#'                                                verbose = T,
+#'                                                sigma.max = 100,
+#'                                                k.max = 1)
+#' }
 #' @return A dataframe with the requested stats
 #' @export
 Compare_Growth_Models <- function(data,   Linf = NULL, Linf.se = NULL,
@@ -405,9 +450,6 @@ Compare_Growth_Models <- function(data,   Linf = NULL, Linf.se = NULL,
 
 }
 
-
-
-
 #' Get_MCMC_parameters
 #' @description Get parameter summary statistics from the outputs of a Estimate_MCMC_Growth object. It is simplified set of
 #'     results than is returned from summary(obj).
@@ -416,6 +458,30 @@ Compare_Growth_Models <- function(data,   Linf = NULL, Linf.se = NULL,
 #'     These include the mean, Standard error of the mean, Standard deviation of the mean, median,
 #'     95th percentiles, effective sample sizes and Rhat.
 #' @import tibble
+#' @examples
+#' \donttest{
+#' # load example data
+#' data("example_data")
+#' ## Biological info - lengths in mm
+#' max_size <- 440
+#' max_size_se <- 5
+#' birth_size <- 0
+#' birth_size_se <- 0.001 # an se cannot be zero
+#'
+#' # Use the function to estimate the rstan model
+#' fit <- Estimate_MCMC_Growth(data = example_data,
+#'                             Model = "VB" ,
+#'                             iter = 5000,
+#'                             Linf = max_size,
+#'                             Linf.se = max_size_se,
+#'                             L0 = birth_size,
+#'                             sigma.max = 100,
+#'                             L0.se = birth_size_se,
+#'                             k.max = 1)
+#'
+#' # Use function to return a dataframe of model results
+#' Get_MCMC_parameters(fit)
+#' }
 #' @export
 #'
 Get_MCMC_parameters <- function (obj)
@@ -438,6 +504,11 @@ Get_MCMC_parameters <- function (obj)
 #' @param Age A single value or vector of ages to convert to length based on the logistic model
 #'
 #' @return A vector of length-at-ages
+#' @examples
+#' # Calculate length-at-age for a logistic growth curve with given parameters
+#' # and age range
+#' Age_Range <- 0:16
+#' Calc_Logistic_LAA(Linf = 1560, k = 0.36, L0 = 73, Age = Age_Range)
 #' @export
 Calc_Logistic_LAA <- function(Linf, k, L0, Age){
   LAA <- (Linf*L0*exp(k*Age))/(Linf+L0*(exp(k*Age)-1))
@@ -452,6 +523,11 @@ Calc_Logistic_LAA <- function(Linf, k, L0, Age){
 #' @param Age A single value or vector of ages to convert to length based on the von Bertalanffy model
 #'
 #' @return A vector of length-at-ages
+#' @examples
+#' # Calculate length-at-age for a von Bertalanffy growth curve with given parameters
+#' # and age range
+#' Age_Range <-  0:16
+#' Calc_VBGF_LAA(Linf = 1630, k = 0.15, L0 = 71, Age = Age_Range)
 #' @export
 Calc_VBGF_LAA <- function(Linf, k, L0, Age){
   LAA <- Linf-(Linf-L0)*exp(-k*Age)
@@ -466,6 +542,11 @@ Calc_VBGF_LAA <- function(Linf, k, L0, Age){
 #' @param Age A single value or vector of ages to convert to length based on the Gompertz model
 #'
 #' @return A vector of length-at-ages
+#' @examples
+#' # Calculate length-at-age for a Gompertz growth curve with given parameters
+#' # and age range
+#' Age_Range <-  0:16
+#' Calc_Gompertz_LAA(Linf = 1580, k = 0.21, L0 = 72, Age = Age_Range)
 #' @export
 Calc_Gompertz_LAA <- function(Linf, k, L0, Age){
   LAA <-L0*exp(log(Linf/L0)*(1-exp(-k*Age)))
@@ -492,6 +573,30 @@ Calc_Gompertz_LAA <- function(Linf, k, L0, Age){
 #'
 #' @return A tibble that has been formatted using  tidybayes::mean_qi(). This includes
 #'     variables: Age, LAA, .lower, .upper, .width, .point and .interval.
+#' @examples
+#' \donttest{
+#' # load example data
+#' data("example_data")
+#' ## Biological info - lengths in mm
+#' max_size <- 440
+#' max_size_se <- 5
+#' birth_size <- 0
+#' birth_size_se <- 0.001 # an se cannot be zero
+#'
+#' # Use the function to estimate the rstan model
+#' fit <- Estimate_MCMC_Growth(data = example_data,
+#'                             Model = "VB" ,
+#'                             iter = 5000,
+#'                             Linf = max_size,
+#'                             Linf.se = max_size_se,
+#'                             L0 = birth_size,
+#'                             sigma.max = 100,
+#'                             L0.se = birth_size_se,
+#'                             k.max = 1)
+#'
+#' # Use function to return a dataframe of model predictionsfor VB growth model
+#' Calculate_MCMC_growth_curve(fit, Model = "VB" , max.age = max(example_data$Age))
+#' }
 #' @export
 Calculate_MCMC_growth_curve <- function(obj, Model = NULL, max.age = NULL, probs = c(0.5,0.75,0.95)){
 
