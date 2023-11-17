@@ -21,3 +21,9 @@ A vector of length-at-ages
 \description{
 Calc_Logistic_LAA
 }
+\examples{
+# Calculate length-at-age for a logistic growth curve with given parameters
+# and age range
+Age_Range <- 0:16
+Calc_Logistic_LAA(Linf = 1560, k = 0.36, L0 = 73, Age = Age_Range)
+}

@@ -35,3 +35,28 @@ A 'stan.fit' object produced from Estimate_MCMC_Growth is converted to a datafra
     This can be conveniently plotted in a ggplot using the geom_lineribbon() function provided in the tidybayes
     package.
 }
+\examples{
+\donttest{
+# load example data
+data("example_data")
+## Biological info - lengths in mm
+max_size <- 440
+max_size_se <- 5
+birth_size <- 0
+birth_size_se <- 0.001 # an se cannot be zero
+
+# Use the function to estimate the rstan model
+fit <- Estimate_MCMC_Growth(data = example_data,
+                            Model = "VB" ,
+                            iter = 5000,
+                            Linf = max_size,
+                            Linf.se = max_size_se,
+                            L0 = birth_size,
+                            sigma.max = 100,
+                            L0.se = birth_size_se,
+                            k.max = 1)
+
+# Use function to return a dataframe of model predictionsfor VB growth model
+Calculate_MCMC_growth_curve(fit, Model = "VB" , max.age = max(example_data$Age))
+}
+}

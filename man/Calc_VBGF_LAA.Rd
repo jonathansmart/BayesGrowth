@@ -21,3 +21,9 @@ A vector of length-at-ages
 \description{
 Calc_VBGF_LAA
 }
+\examples{
+# Calculate length-at-age for a von Bertalanffy growth curve with given parameters
+# and age range
+Age_Range <-  0:16
+Calc_VBGF_LAA(Linf = 1630, k = 0.15, L0 = 71, Age = Age_Range)
+}

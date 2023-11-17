@@ -21,3 +21,9 @@ A vector of length-at-ages
 \description{
 Calc_Gompertz_LAA
 }
+\examples{
+# Calculate length-at-age for a Gompertz growth curve with given parameters
+# and age range
+Age_Range <-  0:16
+Calc_Gompertz_LAA(Linf = 1580, k = 0.21, L0 = 72, Age = Age_Range)
+}

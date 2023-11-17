@@ -251,7 +251,7 @@ Estimate_MCMC_Growth <- function(data,  Model = NULL, Linf = NULL, Linf.se = NUL
 #'                                                Linf.se = max_size_se,
 #'                                                L0 = birth_size,
 #'                                                L0.se = birth_size_se,
-#'                                                verbose = T,
+#'                                                verbose = TRUE,
 #'                                                sigma.max = 100,
 #'                                                k.max = 1)
 #' }

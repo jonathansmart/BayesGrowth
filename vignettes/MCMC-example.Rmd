@@ -2,7 +2,7 @@
 title: "Estimate growth using MCMC"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{MCMC-example}
+  %\VignetteIndexEntry{Estimate growth using MCMC}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -69,7 +69,7 @@ MCMC_example_results <- Estimate_MCMC_Growth(example_data,
                                              L0 = birth_size,
                                              L0.se = birth_size_se,
                                              sigma.max = 100,
-                                             verbose = T,
+                                             verbose = TRUE,
                                              k.max = 1)
 
 
@@ -202,7 +202,7 @@ Looic_example_results <- Compare_Growth_Models(data = example_data,
                                                Linf.se = max_size_se,
                                                L0 = birth_size,
                                                L0.se = birth_size_se,
-                                               verbose = T,
+                                               verbose = TRUE,
                                                sigma.max = 100,
                                                k.max = 1)
 

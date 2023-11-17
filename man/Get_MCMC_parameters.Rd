@@ -11,10 +11,35 @@ Get_MCMC_parameters(obj)
 }
 \value{
 A data.frame with the posterior distributions for each parameter.
-    These include the mean, Standard error of the mean, Standard deviationof the mean, median,
+    These include the mean, Standard error of the mean, Standard deviation of the mean, median,
     95th percentiles, effective sample sizes and Rhat.
 }
 \description{
 Get parameter summary statistics from the outputs of a Estimate_MCMC_Growth object. It is simplified set of
     results than is returned from summary(obj).
+}
+\examples{
+\donttest{
+# load example data
+data("example_data")
+## Biological info - lengths in mm
+max_size <- 440
+max_size_se <- 5
+birth_size <- 0
+birth_size_se <- 0.001 # an se cannot be zero
+
+# Use the function to estimate the rstan model
+fit <- Estimate_MCMC_Growth(data = example_data,
+                            Model = "VB" ,
+                            iter = 5000,
+                            Linf = max_size,
+                            Linf.se = max_size_se,
+                            L0 = birth_size,
+                            sigma.max = 100,
+                            L0.se = birth_size_se,
+                            k.max = 1)
+
+# Use function to return a dataframe of model results
+Get_MCMC_parameters(fit)
+}
 }

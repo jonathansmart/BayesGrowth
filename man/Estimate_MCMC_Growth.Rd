@@ -31,17 +31,17 @@ the function}
 \item{Model}{Which growth model should be run? Must be one of "VB", "Gom" or "Log" for von
 Bertalanffy, Gompertz or Logistic models, respectively}
 
-\item{Linf}{The prior for asymptotic length. MUst be in the same unit (i.e. cm or mm) as the data.
+\item{Linf}{The prior for asymptotic length. Must be in the same unit (i.e. cm or mm) as the data.
 This should be based off of maximum size for the species.}
 
 \item{Linf.se}{The prior for normally distributed standard error around
-asymptotic length. MUst be in the same unit (i.e. cm or mm) as the data. Cannot be zero.}
+asymptotic length. Must be in the same unit (i.e. cm or mm) as the data. Cannot be zero.}
 
-\item{L0}{The prior for length-at-birth. MUst be in the same unit (i.e. cm or mm) as the data.
+\item{L0}{The prior for length-at-birth. Must be in the same unit (i.e. cm or mm) as the data.
 This should be based off of minimum size for the species.}
 
 \item{L0.se}{The prior for normally distributed standard error around
-length-at-birth. MUst be in the same unit (i.e. cm or mm) as the data. Cannot be zero.}
+length-at-birth. Must be in the same unit (i.e. cm or mm) as the data. Cannot be zero.}
 
 \item{k.max}{The maximum value to consider for the growth completion parameter 'k'. In
 the Gompertz and Logistic models, this parameter is often notated as 'g' instead of 'k'.}
@@ -82,4 +82,26 @@ A wrapper function that creates a Stan MCMC model using the rstan package.
     lower bound set at zero. Sigma is the residual variance of the data around the model and
     is set up in the same manner as 'k'. The growth estimates in the model are truncated to
     remain above zero so negative growth cannot occur.
+}
+\examples{
+\donttest{
+# load example data
+data("example_data")
+## Biological info - lengths in mm
+max_size <- 440
+max_size_se <- 5
+birth_size <- 0
+birth_size_se <- 0.001 # an se cannot be zero
+
+# Use the function to estimate the rstan model
+fit <- Estimate_MCMC_Growth(data = example_data,
+                            Model = "VB" ,
+                            iter = 5000,
+                            Linf = max_size,
+                            Linf.se = max_size_se,
+                            L0 = birth_size,
+                            sigma.max = 100,
+                            L0.se = birth_size_se,
+                            k.max = 1)
+}
 }
