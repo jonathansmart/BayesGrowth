@@ -54,7 +54,8 @@ fit <- Estimate_MCMC_Growth(data = example_data,
                             L0 = birth_size,
                             sigma.max = 100,
                             L0.se = birth_size_se,
-                            k.max = 1)
+                            k.max = 1,
+                            n_cores = 1)
 
 # Use function to return a dataframe of model predictionsfor VB growth model
 Calculate_MCMC_growth_curve(fit, Model = "VB" , max.age = max(example_data$Age))

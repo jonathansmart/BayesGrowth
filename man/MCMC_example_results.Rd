@@ -5,7 +5,7 @@
 \alias{MCMC_example_results}
 \title{Example MCMC model outputs}
 \format{
-An rstan model with the class stan.fit
+An 'rstan' model with the class stan.fit
 }
 \usage{
 data(MCMC_example_results)

@@ -5,10 +5,10 @@
 \alias{BayesGrowth}
 \title{BayesGrowth}
 \description{
-A package to estimate fish length-at-age models using MCMC analysis with rstan models.
+A package to estimate fish length-at-age models using MCMC analysis with 'rstan' models.
 
 Estimate fish length-at-age models using MCMC analysis with
-rstan models. This package allows a multimodel approach to growth fitting
+'rstan' models. This package allows a multimodel approach to growth fitting
 to be applied to length-at-age data and is supported by further analyses to
 determine model selection and result presentation. The core methods of this
 package are presented in Smart and Grammer (2021) "Modernising fish and
@@ -18,5 +18,5 @@ shark growth curves with Bayesian length-at-age models". PLOS ONE 16(2):
 \references{
 To cite the BayesGrowth package in publications, type citation('BayesGrowth').
 The Stan software should also be referenced:
-Stan Development Team (2020). RStan: the R interface to Stan. R package version 2.19.3. https://mc-stan.org
+Stan Development Team (2020). RStan: the R interface to Stan. R package version 2.19.3. <https://mc-stan.org>
 }

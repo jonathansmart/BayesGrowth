@@ -1,7 +1,14 @@
+## Resubmission
+
+* quotes provided when 'rstan' is mentioned
+
+* doi added to references using angle brackets
+
+
 ## Initial submission
 
 * \donttest{} is used for several function examples as these
-  functions run MCMC models and have unavoidable long run times.
+  functions run MCMC models and have unavoidably long run times.
   
 * Possibly misspelled words in DESCRIPTION have been checked and are correct
 

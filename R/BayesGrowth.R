@@ -1,12 +1,12 @@
 #' BayesGrowth
 #'
-#' @description A package to estimate fish length-at-age models using MCMC analysis with rstan models.
+#' @description A package to estimate fish length-at-age models using MCMC analysis with 'rstan' models.
 #'
 #' @docType package
 #' @name BayesGrowth
 #' @description
 #' Estimate fish length-at-age models using MCMC analysis with
-#' rstan models. This package allows a multimodel approach to growth fitting
+#' 'rstan' models. This package allows a multimodel approach to growth fitting
 #' to be applied to length-at-age data and is supported by further analyses to
 #' determine model selection and result presentation. The core methods of this
 #' package are presented in Smart and Grammer (2021) "Modernising fish and
@@ -24,7 +24,7 @@
 #' @docType package
 #' @references To cite the BayesGrowth package in publications, type citation('BayesGrowth').
 #' The Stan software should also be referenced:
-#' Stan Development Team (2020). RStan: the R interface to Stan. R package version 2.19.3. https://mc-stan.org
+#' Stan Development Team (2020). RStan: the R interface to Stan. R package version 2.19.3. <https://mc-stan.org>
 #'
 NULL
 
@@ -55,7 +55,7 @@ NULL
 #' @keywords datasets
 #' @name MCMC_example_results
 #' @usage data(MCMC_example_results)
-#' @format An rstan model with the class stan.fit
+#' @format An 'rstan' model with the class stan.fit
 NULL
 
 #' Example MCMC model comparison outputs outputs
