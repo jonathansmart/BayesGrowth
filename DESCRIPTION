@@ -9,12 +9,12 @@ Authors@R: person("Jonathan", "Smart",
     comment = c(ORCID = "0000-0003-2070-3208"))
 Maintainer: Jonathan Smart <jonsmartphd@gmail.com>
 Description: Estimate fish length-at-age models using MCMC analysis with 
-    rstan models. This package allows a multimodel approach to growth fitting
+    'rstan' models. This package allows a multimodel approach to growth fitting
     to be applied to length-at-age data and is supported by further analyses to 
     determine model selection and result presentation. The core methods of this 
     package are presented in Smart and Grammer (2021) "Modernising fish and 
     shark growth curves with Bayesian length-at-age models". PLOS ONE 16(2):
-    e0246734. 
+    e0246734 <doi:10.1371/journal.pone.0246734>.
 License: GPL-3
 URL: https://github.com/jonathansmart/BayesGrowth
 BugReports: https://github.com/jonathansmart/BayesGrowth/issues
