@@ -16,7 +16,7 @@ shark growth curves with Bayesian length-at-age models". PLOS ONE 16(2):
   e0246734.
 }
 \references{
-To cite the AquaticLifeHistory package in publications, type citation('AquaticLifeHistory').
+To cite the BayesGrowth package in publications, type citation('BayesGrowth').
 The Stan software should also be referenced:
 Stan Development Team (2020). RStan: the R interface to Stan. R package version 2.19.3. https://mc-stan.org
 }

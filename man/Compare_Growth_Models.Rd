@@ -90,7 +90,6 @@ birth_size_se <- 0.001 # an se cannot be zero
 Looic_example_results <- Compare_Growth_Models(data = example_data,
                                                stats = "LooIC",
                                                iter = 10000,
-                                               n_cores = 3,
                                                n.chains = 4,
                                                BurnIn = 1000,
                                                thin = 1,

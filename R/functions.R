@@ -60,7 +60,8 @@
 #'                             L0 = birth_size,
 #'                             sigma.max = 100,
 #'                             L0.se = birth_size_se,
-#'                             k.max = 1)
+#'                             k.max = 1,
+#'                             n_cores = 1)
 #' }
 #' @return An object of class 'stanfit' from the rstan package.
 #' @export
@@ -243,10 +244,10 @@ Estimate_MCMC_Growth <- function(data,  Model = NULL, Linf = NULL, Linf.se = NUL
 #' Looic_example_results <- Compare_Growth_Models(data = example_data,
 #'                                                stats = "LooIC",
 #'                                                iter = 10000,
-#'                                                n_cores = 3,
 #'                                                n.chains = 4,
 #'                                                BurnIn = 1000,
 #'                                                thin = 1,
+#'                                                n_cores = 1,
 #'                                                Linf = max_size,
 #'                                                Linf.se = max_size_se,
 #'                                                L0 = birth_size,
@@ -477,7 +478,8 @@ Compare_Growth_Models <- function(data,   Linf = NULL, Linf.se = NULL,
 #'                             L0 = birth_size,
 #'                             sigma.max = 100,
 #'                             L0.se = birth_size_se,
-#'                             k.max = 1)
+#'                             k.max = 1,
+#'                             n_cores = 1)
 #'
 #' # Use function to return a dataframe of model results
 #' Get_MCMC_parameters(fit)
@@ -592,7 +594,8 @@ Calc_Gompertz_LAA <- function(Linf, k, L0, Age){
 #'                             L0 = birth_size,
 #'                             sigma.max = 100,
 #'                             L0.se = birth_size_se,
-#'                             k.max = 1)
+#'                             k.max = 1,
+#'                             n_cores = 1)
 #'
 #' # Use function to return a dataframe of model predictionsfor VB growth model
 #' Calculate_MCMC_growth_curve(fit, Model = "VB" , max.age = max(example_data$Age))
