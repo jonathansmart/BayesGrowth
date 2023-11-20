@@ -112,11 +112,11 @@ fit
 #> post-warmup draws per chain=2500, total post-warmup draws=10000.
 #> 
 #>           mean se_mean   sd     2.5%      25%      50%      75%    97.5% n_eff
-#> Linf    318.07    0.08 4.18   310.76   315.17   317.73   320.61   327.37  2433
-#> k         0.66    0.00 0.03     0.59     0.64     0.66     0.68     0.73  2506
-#> L0        0.00    0.00 0.00     0.00     0.00     0.00     0.00     0.00  4382
-#> sigma    24.33    0.02 0.89    22.71    23.71    24.29    24.91    26.21  2806
-#> lp__  -3933.99    0.03 1.55 -3937.92 -3934.75 -3933.63 -3932.84 -3932.05  2681
+#> Linf    317.86    0.09 4.13   310.52   314.98   317.58   320.40   326.58  2150
+#> k         0.66    0.00 0.03     0.59     0.64     0.66     0.69     0.73  2274
+#> L0        0.00    0.00 0.00     0.00     0.00     0.00     0.00     0.00  3991
+#> sigma    24.30    0.02 0.87    22.73    23.68    24.25    24.87    26.13  2538
+#> lp__  -3933.95    0.03 1.52 -3937.81 -3934.70 -3933.61 -3932.84 -3932.06  2305
 #>       Rhat
 #> Linf     1
 #> k        1
@@ -124,7 +124,7 @@ fit
 #> sigma    1
 #> lp__     1
 #> 
-#> Samples were drawn using NUTS(diag_e) at Fri Nov 17 08:47:53 2023.
+#> Samples were drawn using NUTS(diag_e) at Mon Nov 20 13:44:46 2023.
 #> For each parameter, n_eff is a crude measure of effective sample size,
 #> and Rhat is the potential scale reduction factor on split chains (at 
 #> convergence, Rhat=1).
