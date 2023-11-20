@@ -35,8 +35,6 @@ Imports:
     stats,
     tibble,
     tidybayes
-Remotes: 
-    jonathansmart/AquaticLifeHistory
 Suggests: 
     knitr,
     rmarkdown,
