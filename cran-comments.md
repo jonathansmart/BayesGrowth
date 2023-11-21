@@ -17,6 +17,6 @@ of these occur due to rstan and are not a problem for a cran submission.
 
 ## R CMD check results
 
-0 errors | 0 warnings | 3 notes
+0 errors | 0 warnings | 1 notes
 
 * This is a new release.
