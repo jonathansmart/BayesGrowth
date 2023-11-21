@@ -7,6 +7,8 @@
 
 [![DOI](https://zenodo.org/badge/223878432.svg)](https://zenodo.org/badge/latestdoi/223878432)
 [![R-CMD-check](https://github.com/jonathansmart/BayesGrowth/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/jonathansmart/BayesGrowth/actions/workflows/R-CMD-check.yaml)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/BayesGrowth)](https://CRAN.R-project.org/package=BayesGrowth)
 <!-- badges: end -->
 
 BayesGrowth combines length-at-age modelling for fisheries with MCMC
@@ -112,11 +114,11 @@ fit
 #> post-warmup draws per chain=2500, total post-warmup draws=10000.
 #> 
 #>           mean se_mean   sd     2.5%      25%      50%      75%    97.5% n_eff
-#> Linf    317.86    0.09 4.13   310.52   314.98   317.58   320.40   326.58  2150
-#> k         0.66    0.00 0.03     0.59     0.64     0.66     0.69     0.73  2274
-#> L0        0.00    0.00 0.00     0.00     0.00     0.00     0.00     0.00  3991
-#> sigma    24.30    0.02 0.87    22.73    23.68    24.25    24.87    26.13  2538
-#> lp__  -3933.95    0.03 1.52 -3937.81 -3934.70 -3933.61 -3932.84 -3932.06  2305
+#> Linf    318.05    0.08 4.13   310.78   315.11   317.76   320.70   326.84  2563
+#> k         0.66    0.00 0.03     0.59     0.64     0.66     0.68     0.73  2620
+#> L0        0.00    0.00 0.00     0.00     0.00     0.00     0.00     0.00  4324
+#> sigma    24.32    0.02 0.87    22.72    23.71    24.28    24.88    26.11  2924
+#> lp__  -3933.95    0.03 1.50 -3937.64 -3934.68 -3933.62 -3932.85 -3932.07  2695
 #>       Rhat
 #> Linf     1
 #> k        1
@@ -124,7 +126,7 @@ fit
 #> sigma    1
 #> lp__     1
 #> 
-#> Samples were drawn using NUTS(diag_e) at Mon Nov 20 13:44:46 2023.
+#> Samples were drawn using NUTS(diag_e) at Wed Nov 22 09:05:18 2023.
 #> For each parameter, n_eff is a crude measure of effective sample size,
 #> and Rhat is the potential scale reduction factor on split chains (at 
 #> convergence, Rhat=1).
