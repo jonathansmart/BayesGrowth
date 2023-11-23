@@ -2,7 +2,7 @@ Type: Package
 Package: BayesGrowth
 Title: Estimate Fish Growth Using MCMC Analysis
 Date: 2023-11-13
-Version: 1.0.0
+Version: 1.0.0.9000
 Authors@R: person("Jonathan", "Smart", 
     email = "jonsmartphd@gmail.com", 
     role = c("aut", "cre", "ctb", "cph"),
@@ -51,4 +51,3 @@ LinkingTo:
     RcppParallel (>= 5.0.1),
     rstan (>= 2.18.1),
     StanHeaders (>= 2.18.0)
-

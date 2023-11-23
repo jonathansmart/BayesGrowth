@@ -15,21 +15,13 @@ BayesGrowth combines length-at-age modelling for fisheries with MCMC
 implemented using Stan and the
 [rstan](https://mc-stan.org/users/interfaces/rstan) package. Growth
 modelling using models such as the von Bertalanffy growth model involves
-three parameters:
-![L\_{}](https://render.githubusercontent.com/render/math?math=L_%7B%5Cinfty%7D),
-*k* and either
-![L\_{0}](https://render.githubusercontent.com/render/math?math=L_%7B0%7D)
-or
-![t\_{0}](https://render.githubusercontent.com/render/math?math=t_%7B0%7D).
-Two of these parameters:
-![L\_{0}](https://render.githubusercontent.com/render/math?math=L_%7B0%7D)
-and
-![L\_{}](https://render.githubusercontent.com/render/math?math=L_%7B%5Cinfty%7D)
-have direct biological meaning as the size-at-birth and maximum length,
-respectively. This package provides the tools to run an MCMC model with
-these two parameters treated as size-at-birth and maximum length using a
-rstan model with a No U-Turn Sampling (NUTS) algorithm. This MCMC model
-is pre-specified and built into wrapper functions.
+three parameters: $L{\infty}$, $k$ and either $L_{0}$ or $t_{0}$. Two of
+these parameters: $L_{0}$ and $L_{\infty}$ have direct biological
+meaning as the size-at-birth and maximum length, respectively. This
+package provides the tools to run an MCMC model with these two
+parameters treated as size-at-birth and maximum length using a rstan
+model with a No U-Turn Sampling (NUTS) algorithm. This MCMC model is
+pre-specified and built into wrapper functions.
 
 The user can therefore run an MCMC growth model using knowledge of
 species length-at-birth and maximum size as priors.
@@ -70,16 +62,13 @@ wrapper function around an rstan model. It requires a data input that
 includes columns that can be identified “Age” and “Length”, the model
 needs to be specified (several options are available) and the priors
 must be specified. Priors include the max size with an error,
-length-at-birth with an error and upper limits for *k* and
-![](https://render.githubusercontent.com/render/math?math=%5Csigma).
+length-at-birth with an error and upper limits for $k$ and $\sigma$.
 These latter two parameters have no informative priors and only require
 sensible upper bounds. Many fish species (including this example) have a
 size at birth of zero. Therefore, this can value can be used as a prior
 along with a very small error to indicate high certainty of this prior.
 The `L0.se` argument cannot be zero, but the model is specified to
-truncate
-![L\_{0}](https://render.githubusercontent.com/render/math?math=L_%7B0%7D)
-at zero and keep growth positive.
+truncate $L_{0}$ at zero and keep growth positive.
 
 ``` r
 library(BayesGrowth)
@@ -114,11 +103,11 @@ fit
 #> post-warmup draws per chain=2500, total post-warmup draws=10000.
 #> 
 #>           mean se_mean   sd     2.5%      25%      50%      75%    97.5% n_eff
-#> Linf    318.05    0.08 4.13   310.78   315.11   317.76   320.70   326.84  2563
-#> k         0.66    0.00 0.03     0.59     0.64     0.66     0.68     0.73  2620
-#> L0        0.00    0.00 0.00     0.00     0.00     0.00     0.00     0.00  4324
-#> sigma    24.32    0.02 0.87    22.72    23.71    24.28    24.88    26.11  2924
-#> lp__  -3933.95    0.03 1.50 -3937.64 -3934.68 -3933.62 -3932.85 -3932.07  2695
+#> Linf    318.30    0.09 4.15   311.08   315.36   318.01   320.93   327.06  2199
+#> k         0.66    0.00 0.03     0.59     0.63     0.66     0.68     0.72  2311
+#> L0        0.00    0.00 0.00     0.00     0.00     0.00     0.00     0.00  4560
+#> sigma    24.38    0.02 0.88    22.77    23.76    24.35    24.95    26.23  2500
+#> lp__  -3933.93    0.03 1.47 -3937.64 -3934.67 -3933.60 -3932.84 -3932.06  2856
 #>       Rhat
 #> Linf     1
 #> k        1
@@ -126,7 +115,7 @@ fit
 #> sigma    1
 #> lp__     1
 #> 
-#> Samples were drawn using NUTS(diag_e) at Wed Nov 22 09:05:18 2023.
+#> Samples were drawn using NUTS(diag_e) at Fri Nov 24 09:13:49 2023.
 #> For each parameter, n_eff is a crude measure of effective sample size,
 #> and Rhat is the potential scale reduction factor on split chains (at 
 #> convergence, Rhat=1).
