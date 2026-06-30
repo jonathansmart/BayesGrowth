@@ -12,19 +12,19 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 
-RcppExport SEXP _rcpp_module_boot_stan_fit4BC_Gompertz_stan_model_mod();
-RcppExport SEXP _rcpp_module_boot_stan_fit4BC_Logistic_stan_model_mod();
-RcppExport SEXP _rcpp_module_boot_stan_fit4BC_VB_stan_model_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4Gompertz_stan_model_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4Logistic_stan_model_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4Ranef_Gompertz_stan_model_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4Ranef_Logistic_stan_model_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4Ranef_VB_stan_model_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4VB_stan_model_mod();
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_rcpp_module_boot_stan_fit4BC_Gompertz_stan_model_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4BC_Gompertz_stan_model_mod, 0},
-    {"_rcpp_module_boot_stan_fit4BC_Logistic_stan_model_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4BC_Logistic_stan_model_mod, 0},
-    {"_rcpp_module_boot_stan_fit4BC_VB_stan_model_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4BC_VB_stan_model_mod, 0},
     {"_rcpp_module_boot_stan_fit4Gompertz_stan_model_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4Gompertz_stan_model_mod, 0},
     {"_rcpp_module_boot_stan_fit4Logistic_stan_model_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4Logistic_stan_model_mod, 0},
+    {"_rcpp_module_boot_stan_fit4Ranef_Gompertz_stan_model_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4Ranef_Gompertz_stan_model_mod, 0},
+    {"_rcpp_module_boot_stan_fit4Ranef_Logistic_stan_model_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4Ranef_Logistic_stan_model_mod, 0},
+    {"_rcpp_module_boot_stan_fit4Ranef_VB_stan_model_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4Ranef_VB_stan_model_mod, 0},
     {"_rcpp_module_boot_stan_fit4VB_stan_model_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4VB_stan_model_mod, 0},
     {NULL, NULL, 0}
 };
