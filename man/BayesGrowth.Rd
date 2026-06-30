@@ -20,3 +20,15 @@ To cite the BayesGrowth package in publications, type citation('BayesGrowth').
 The Stan software should also be referenced:
 Stan Development Team (2020). RStan: the R interface to Stan. R package version 2.19.3. <https://mc-stan.org>
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/jonathansmart/BayesGrowth}
+  \item Report bugs at \url{https://github.com/jonathansmart/BayesGrowth/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: Jonathan Smart \email{jonsmartphd@gmail.com} (\href{https://orcid.org/0000-0003-2070-3208}{ORCID}) [contributor, copyright holder]
+
+}

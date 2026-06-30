@@ -1,10 +1,10 @@
 
 data {
   int<lower=1> N; // Total number of observations
-  int<lower=1> J; // Number of individuals
-  vector[N] age; // Age of each observation
-  vector[N] length; // Length of each observation
-  int<lower=1, upper=J> individual[N]; // Individual index for each observation
+  int<lower=1> J; // Number of Groups
+  vector[N] Age; // Age of each observation
+  vector[N] Length; // Length of each observation
+  int<lower=1, upper=J> Group[N]; // Group index for each observation
 
   //prior data
   vector[7] priors; //Linf, L0, k, sigma, and the sigma of Linf, L0 and k
@@ -13,17 +13,17 @@ data {
 }
 
 parameters {
-  real<lower=0> Linf; // Population-level asymptotic length
+  real<lower=0> Linf; // Population-level asymptotic Length
   real<lower=0> k; // Population-level growth rate
-  real L0; // Population-level theoretical length at age  zero
+  real L0; // Population-level theoretical Length at Age  zero
 
-  vector<lower=0>[J] L_inf_j; // Individual-level asymptotic length
-  vector<lower=0>[J] K_j; // Individual-level growth rate
-  vector[J] L0_j; // Individual-level theoretical length at age  zero
+  vector<lower=0>[J] Linf_j; // Group-level asymptotic Length
+  vector<lower=0>[J] k_j; // Group-level growth rate
+  vector[J] L0_j; // Group-level theoretical Length at Age  zero
 
-  real<lower=0> sigma_L_inf; // SD of individual-level L_inf
-  real<lower=0> sigma_K; // SD of individual-level K
-  real<lower=0> sigma_L0; // SD of individual-level t0
+  real<lower=0> sigma_Linf; // SD of Group-level Linf
+  real<lower=0> sigma_k; // SD of Group-level K
+  real<lower=0> sigma_L0; // SD of Group-level t0
   real<lower=0> sigma; // SD of measurement error
 }
 
@@ -33,19 +33,19 @@ model {
   k ~ uniform(0, priors[3]);
   L0 ~ normal(priors[2], priors_se[2]);
 
-  L_inf_j ~ normal(Linf, sigma_L_inf);
-  K_j ~ normal(k, sigma_K);
+  Linf_j ~ normal(Linf, sigma_Linf);
+  k_j ~ normal(k, sigma_k);
   L0_j ~ normal(L0, sigma_L0);
 
-  sigma_L_inf ~ uniform(0, priors[5]);
-  sigma_K ~ uniform(0, priors[7]);
+  sigma_Linf ~ uniform(0, priors[5]);
+  sigma_k ~ uniform(0, priors[7]);
   sigma_L0 ~ uniform(0, priors[6]);
   sigma ~ uniform(0, priors[4]);
 
   // Likelihood
   for (i in 1:N) {
-    //target += normal_lpdf(length[i] | L0_j[individual[i]]*exp(log(L_inf_j[individual[i]]/L0_j[individual[i]])*(1-exp(-K_j[individual[i]]*age[i]))), sigma);
-    target += normal_lpdf(length[i] | (L_inf_j[individual[i]]*L0_j[individual[i]]*exp(K_j[individual[i]]*age[i]))/(L_inf_j[individual[i]]+L0_j[individual[i]]*(exp(K_j[individual[i]]*age[i])-1)), sigma);
+    //target += normal_lpdf(Length[i] | L0_j[Group[i]]*exp(log(Linf_j[Group[i]]/L0_j[Group[i]])*(1-exp(-k_j[Group[i]]*Age[i]))), sigma);
+    target += normal_lpdf(Length[i] | (Linf_j[Group[i]]*L0_j[Group[i]]*exp(k_j[Group[i]]*Age[i]))/(Linf_j[Group[i]]+L0_j[Group[i]]*(exp(k_j[Group[i]]*Age[i])-1)), sigma);
 
   }
 
@@ -55,7 +55,7 @@ model {
   generated quantities {
     vector[N] log_lik;
     for (i in 1:N) {
-      log_lik[i] = normal_lpdf(length[i] | (L_inf_j[individual[i]]*L0_j[individual[i]]*exp(K_j[individual[i]]*age[i]))/(L_inf_j[individual[i]]+L0_j[individual[i]]*(exp(K_j[individual[i]]*age[i])-1)), sigma);
+      log_lik[i] = normal_lpdf(Length[i] | (Linf_j[Group[i]]*L0_j[Group[i]]*exp(k_j[Group[i]]*Age[i]))/(Linf_j[Group[i]]+L0_j[Group[i]]*(exp(k_j[Group[i]]*Age[i])-1)), sigma);
     }
 
 }

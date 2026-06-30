@@ -195,6 +195,193 @@ Estimate_MCMC_Growth <- function(data,  Model = NULL, Linf = NULL, Linf.se = NUL
 
 }
 
+#' Estimate_MCMC_Group_Growth
+#' @description A wrapper function that creates a Stan MCMC model using the rstan package.
+#'
+#' @param data Text
+#' @param group_col Text
+#' @param Model Text
+#' @param Linf Text
+#' @param Linf.se Text
+#' @param L0 Text
+#' @param L0.se Text
+#' @param k.max Text
+#' @param sigma.max Text
+#' @param iter Text
+#' @param BurnIn Text
+#' @param n_cores Text
+#' @param controls Text
+#' @param n.chains Text
+#' @param thin Text
+#' @param verbose Text
+#'
+#' @returns Text
+#' @export
+#'
+#' @examples
+Estimate_MCMC_Group_Growth <- function(data, group_col = NULL,  Model = NULL, Linf = NULL, Linf.se = NULL,
+                                       L0 = NULL, L0.se = NULL, k.max = NULL, sigma.max = NULL,
+                                       iter = 10000, BurnIn = iter/2, n_cores = 1, controls = NULL,
+                                       n.chains = 4, thin = 1,verbose = FALSE){
+
+  if(any(is.null(c(Linf, Linf.se, L0, L0.se, k.max, sigma.max)))) stop("At least one parameter or its error are not correctly specified")
+  if(length(Model) != 1) stop("Only one growth model can be used in each function call")
+  if(is.null(Model))stop("Growth model has not been specified")
+  if(!Model %in% c("VB", "Gom", "Log")) stop("Model must be specified as either'VB', 'Log' or 'Gom'")
+
+
+  age_col <- grep("age", substr(tolower(names(data)),1,3))
+  if(length(age_col) <1) stop("Age column heading could not be distinguished ")
+  if(length(age_col) >1) stop("Multiple age columns detected. Remove unecessary variables or rename desired column to 'Age' ")
+
+  len_col <- grep("len|tl|lt|siz", substr(tolower(names(data)),1,3))
+  if(length(len_col) <1) stop("Length column heading could not be distinguished ")
+  if(length(len_col) >1) stop("Multiple length columns detected. Remove unecessary variables or rename desired column to 'Length' ")
+
+  if(is.null(group_col)) stop("Group column must be specified")
+  if(all(!colnames(data) %in% group_col)) stop("Group column heading not included in 'data'")
+  if(length(group_col) >1) stop("Multiple Group columns detected. Provide only one column name")
+
+  if(Linf.se == 0 | L0.se == 0) stop("L0 and Linf standard error priors cannot be zero")
+  if(any(is.na(data))) stop("data contains NA's")
+
+  if(n_cores >  parallel::detectCores()-1) {
+    n_cores <- 1
+    message("Not enough cores available. Reseting to 1 core")
+  }
+
+  # Add priors for random effect components
+  sigma.max.Linf = Linf
+  sigma.max.k = k.max
+  sigma.max.L0 = L0
+
+  if(is.null(controls)) controls <- list(adapt_delta = 0.9)
+
+  Age <- data[,age_col]
+  Length <- data[,len_col]
+  Group <- data[,group_col]
+
+  starting_parameters <- function(chain_id) {
+    mean.age <- tapply(Length, round(Age), mean, na.rm = T)
+    Lt1 <- mean.age[2:length(mean.age)]
+    Lt <- mean.age[1:length(mean.age) - 1]
+    model <- lm(Lt1 ~ Lt)
+    k <- suppressWarnings(abs(-log(model$coef[2])))
+    Linf <- abs(model$coef[1]/(1 - model$coef[2]))
+    L0 <- lm(mean.age ~ poly(as.numeric(names(mean.age)),
+                             2, raw = TRUE))$coef[1]
+    L0 <- ifelse(L0 < 0, 1, L0)
+    L0 <- ifelse(is.na(L0), min(Length), L0)
+    Linf <- ifelse(Linf < 0, max(Length), Linf)
+    Linf <- ifelse(is.na(Linf), max(Length), Linf)
+    k <- ifelse(k < 0, 0.1, k)
+    k <- ifelse(is.na(k), 0.1, k)
+    k <- ifelse(is.nan(k), 0.1, k)
+    results <- list(Linf = Linf,
+                    L0 = L0,
+                    k = k,
+                    sigma = sigma.max/2,
+                    Linf_j = rep(Linf, length(unique(Group))),
+                    L0_j = rep(L0, length(unique(Group))),
+                    k_j = rep(k, length(unique(Group))),
+                    sigma_Linf = Linf/10,
+                    sigma_k =  k,
+                    sigma_L0 = L0/10
+    )
+    return(results)
+  }
+
+  if(starting_parameters(1)$k >= k.max) stop("k.max is too low. Consider increasing it")
+
+  if(verbose == FALSE){
+    text <- 0
+  }else{
+    text <- iter/10
+  }
+
+  priors <- c(Linf, L0, k.max, sigma.max, sigma.max.Linf, sigma.max.L0, sigma.max.k)
+  priors_se <- c(Linf.se, L0.se)
+
+  dat <- list(  N = nrow(data),
+                J = length(unique(Group)),
+                Age = Age,
+                Length = Length,
+                Group = as.integer(factor(Group)),
+                priors = priors,
+                priors_se = priors_se)
+
+  if(Model == "VB"){
+    Growth_model <- rstan::sampling(object = stanmodels$Ranef_VB_stan_model,
+                                    data = dat,
+                                    init = starting_parameters,
+                                    control = controls,
+                                    warmup = BurnIn,
+                                    thin = thin,
+                                    verbose = verbose,
+                                    iter = iter,
+                                    cores = n_cores,
+                                    open_progress = FALSE,
+                                    refresh = text,
+                                    include = TRUE,
+                                    pars = c("Linf", "k","L0", "sigma",
+                                             "Linf_j", "k_j", "L0_j",
+                                             "sigma_Linf", "sigma_k",
+                                             "sigma_L0"),
+                                    chains=n.chains)
+
+  } else if(Model == "Gom"){
+    Growth_model <- rstan::sampling(object = stanmodels$Ranef_Gompertz_stan_model,
+                                    data = dat,
+                                    init = starting_parameters,
+                                    control = controls,
+                                    warmup = BurnIn,
+                                    thin = thin,
+                                    verbose = verbose,
+                                    iter = iter,
+                                    cores = n_cores,
+                                    open_progress = FALSE,
+                                    refresh = text,
+                                    include = TRUE,
+                                    pars = c("Linf", "k","L0", "sigma",
+                                             "Linf_j", "k_j", "L0_j",
+                                             "sigma_Linf", "sigma_k",
+                                             "sigma_L0"),
+                                    chains=n.chains)
+
+  } else if(Model == "Log"){
+    Growth_model <- rstan::sampling(object = stanmodels$Ranef_Logistic_stan_model,
+                                    data = dat,
+                                    init = starting_parameters,
+                                    control = controls,
+                                    warmup = BurnIn,
+                                    thin = thin,
+                                    verbose = verbose,
+                                    iter = iter,
+                                    open_progress = FALSE,
+                                    refresh = text,
+                                    cores = n_cores,
+                                    include = TRUE,
+                                    pars = c("Linf", "k","L0", "sigma",
+                                             "Linf_j", "k_j", "L0_j",
+                                             "sigma_Linf", "sigma_k",
+                                             "sigma_L0"),
+                                    chains=n.chains)
+
+
+  } else{
+    stop("Model must be specified as either'VB', 'Log' or 'Gom'")
+  }
+
+
+
+
+  return(Growth_model)
+
+}
+
+
+
+
 #' Compare_Growth_Models
 #' @description Conduct growth model selection using 'Leave One Out' (LOO) cross validation analysis and
 #'     Widely Applicable Information Criterion (WAIC)for three growth models:
@@ -452,12 +639,15 @@ Compare_Growth_Models <- function(data,   Linf = NULL, Linf.se = NULL,
 }
 
 #' Get_MCMC_parameters
-#' @description Get parameter summary statistics from the outputs of a Estimate_MCMC_Growth object. It is simplified set of
-#'     results than is returned from summary(obj).
-#' @param obj An output from the Estimate_MCMC_Growth function
+#' @description Get parameter summary statistics from the outputs of a `Estimate_MCMC_Growth`
+#'     or `Estimate_MCMC_Group_Growth` object. It is simplified set of
+#'     results than is returned from summary(obj). If used with `Estimate_MCMC_Group_Growth`
+#'     then a list of outputs for the population and group level parameters is returned.
+#' @param obj An output from the `Estimate_MCMC_Growth` or `Estimate_MCMC_Group_Growth`function
 #' @return A data.frame with the posterior distributions for each parameter.
 #'     These include the mean, Standard error of the mean, Standard deviation of the mean, median,
 #'     95th percentiles, effective sample sizes and Rhat.
+#'     A two element list of dataframes is returned if used with `Estimate_MCMC_Group_Growth`
 #' @import tibble
 #' @examples
 #' \donttest{
@@ -488,14 +678,41 @@ Compare_Growth_Models <- function(data,   Linf = NULL, Linf.se = NULL,
 #'
 Get_MCMC_parameters <- function (obj)
 {
-  # if (class(obj) != "stanfit")
-  if (!inherits(obj,"stanfit"))
-    stop("`obj` must be a result returned from `Estimate_MCMC_Growth()`")
-  results <- as.data.frame(summary(obj, pars = c("Linf", "k",
-                                                 "L0", "sigma"), probs = c(0.025, 0.5, 0.975))$summary)
+  if (!inherits(obj, "stanfit"))
+    stop("`obj` must be a result returned from `Estimate_MCMC_Growth()` or `Estimate_MCMC_Group_Growth()`")
 
-  results <- tibble::rownames_to_column(results, var = "Parameter")
-  results <- dplyr::mutate_at(results,.vars = -everything("Parameter"), .funs = ~round(.,2))
+  if(any(obj@model_pars == "Linf_j")){
+    results <- as.data.frame(rstan::summary(obj,
+                                            pars = c("Linf", "k", "L0",
+                                                     "Linf_j", "k_j","L0_j",
+                                                     "sigma_Linf", "sigma_k" ,"sigma_L0","sigma" ),
+                                            probs = c(0.025, 0.5, 0.975))$summary)
+    results <- tibble::rownames_to_column(results, var = "Parameter")
+    results <- dplyr::mutate_at(results, .vars = -everything("Parameter"),
+                                .funs = ~round(., 2))
+    results$Parameter <- sub(pattern = "^([A-Za-z0-9]+)_j\\[([0-9]+)\\]",
+                             replacement = "\\1 (Group \\2)",
+                             x = results$Parameter)
+
+    population_results <- dplyr::filter(results, Parameter %in% c("Linf", "k",
+                                                                  "L0", "sigma"))
+
+    group_results <- dplyr::filter(results, !Parameter %in% c("Linf", "k",
+                                                              "L0", "sigma"))
+
+    results <- list(population_results, group_results)
+
+    names(results) <- c("Population level parameters", "Group level parameters")
+
+
+  }else{
+    results <- as.data.frame(rstan::summary(obj, pars = c("Linf", "k",
+                                                          "L0", "sigma"), probs = c(0.025, 0.5, 0.975))$summary)
+    results <- tibble::rownames_to_column(results, var = "Parameter")
+    results <- dplyr::mutate_at(results, .vars = -everything("Parameter"),
+                                .funs = ~round(., 2))
+  }
+
   return(results)
 }
 #' Calc_Logistic_LAA
@@ -606,22 +823,53 @@ Calculate_MCMC_growth_curve <- function(obj, Model = NULL, max.age = NULL, probs
   if(!Model %in% c("VB", "Gom", "Log")) stop("'Model must be one of either 'VB', 'Gom' or 'Log")
   if(is.null(max.age)) stop("Please specify max age")
 
-  processed_data <- Get_MCMC_parameters(obj)
-  L0_sims <- rstan::extract(obj)$L0
-  Linf_sims <- rstan::extract(obj)$Linf
-  k_sims <- rstan::extract(obj)$k
-  processed_data <- data.frame(Linf = Linf_sims,k =  k_sims,L0 = L0_sims)
+  if(any(obj@model_pars == "Linf_j")){
+    # processed_data <- Get_MCMC_parameters(obj)[[1]]
 
-  processed_data <- dplyr::mutate(processed_data, sim = dplyr::row_number())
-  processed_data <- dplyr::left_join(processed_data, expand.grid(sim = processed_data$sim, Age = seq(0,max.age, 0.1)), by = "sim")
-  processed_data <- dplyr::mutate(processed_data, LAA = dplyr::case_when(
-    Model == "VB" ~ Calc_VBGF_LAA(Linf, k, L0, Age),
-    Model == "Log" ~ Calc_Logistic_LAA(Linf, k, L0, Age),
-    Model == "Gom" ~ Calc_Gompertz_LAA(Linf, k, L0, Age),
-    TRUE ~ NA_real_
-  ))
-  processed_data <- dplyr::group_by(processed_data, Age)
-  results <-suppressWarnings( tidybayes::mean_qi(processed_data, LAA,.width = probs) )
+    results <- NULL
+    for(j in 1:obj@par_dims$Linf_j){
+      L0_sims <- rstan::extract(obj)$L0_j[,j]
+      Linf_sims <- rstan::extract(obj)$Linf_j[,j]
+      k_sims <- rstan::extract(obj)$k_j[,j]
+      processed_data <- data.frame(Linf = Linf_sims,k =  k_sims,L0 = L0_sims)
+
+      processed_data <- dplyr::mutate(processed_data, sim = dplyr::row_number())
+      processed_data <- dplyr::left_join(processed_data, expand.grid(sim = processed_data$sim, Age = seq(0,max.age, 0.1)), by = "sim")
+      processed_data <- dplyr::mutate(processed_data, LAA = dplyr::case_when(
+        Model == "VB" ~ Calc_VBGF_LAA(Linf, k, L0, Age),
+        Model == "Log" ~ Calc_Logistic_LAA(Linf, k, L0, Age),
+        Model == "Gom" ~ Calc_Gompertz_LAA(Linf, k, L0, Age),
+        TRUE ~ NA_real_
+      ))
+      processed_data <- dplyr::group_by(processed_data, Age)
+      tmp <-suppressWarnings( tidybayes::mean_qi(processed_data, LAA,.width = probs) )
+      tmp$Group <- j
+      results <- rbind(results, tmp)
+    }
+
+  } else {
+
+
+    processed_data <- Get_MCMC_parameters(obj)
+    L0_sims <- rstan::extract(obj)$L0
+    Linf_sims <- rstan::extract(obj)$Linf
+    k_sims <- rstan::extract(obj)$k
+    processed_data <- data.frame(Linf = Linf_sims,k =  k_sims,L0 = L0_sims)
+
+    processed_data <- dplyr::mutate(processed_data, sim = dplyr::row_number())
+    processed_data <- dplyr::left_join(processed_data, expand.grid(sim = processed_data$sim, Age = seq(0,max.age, 0.1)), by = "sim")
+    processed_data <- dplyr::mutate(processed_data, LAA = dplyr::case_when(
+      Model == "VB" ~ Calc_VBGF_LAA(Linf, k, L0, Age),
+      Model == "Log" ~ Calc_Logistic_LAA(Linf, k, L0, Age),
+      Model == "Gom" ~ Calc_Gompertz_LAA(Linf, k, L0, Age),
+      TRUE ~ NA_real_
+    ))
+    processed_data <- dplyr::group_by(processed_data, Age)
+    results <-suppressWarnings( tidybayes::mean_qi(processed_data, LAA,.width = probs) )
+  }
+
 
   return(results)
 }
+
+
