@@ -684,7 +684,7 @@ Compare_Growth_Models <- function(data, Linf = NULL, Linf.se = NULL,
 #' @description Conduct growth model selection using 'Leave One Out' (LOO) cross validation analysis and
 #'     Widely Applicable Information Criterion (WAIC)for three growth models:
 #'     (von Bertalanffy, Gompertz and Logistic) using the same prior parameters for each. This is applied
-#'     to hierarchical models that use the `ID_col` argument. Use `Compare_Growth_Models` for
+#'     to hierarchical models that use the `ID_col` argument for back calculated data. Use `Compare_Growth_Models` for
 #'     non-hierarchical models.
 #' @param data A data.frame that contains columns named 'Age' and "Length'. The function can
 #'     detect columns with similar names. If age and length columns cannot be determined then
