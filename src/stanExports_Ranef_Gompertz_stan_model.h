@@ -40,7 +40,7 @@ static constexpr std::array<const char*, 42> locations_array__ =
   " (in 'Ranef_Gompertz_stan_model', line 20, column 2 to column 25)",
   " (in 'Ranef_Gompertz_stan_model', line 21, column 2 to column 22)",
   " (in 'Ranef_Gompertz_stan_model', line 42, column 4 to column 22)",
-  " (in 'Ranef_Gompertz_stan_model', line 44, column 6 to column 139)",
+  " (in 'Ranef_Gompertz_stan_model', line 44, column 6 to column 127)",
   " (in 'Ranef_Gompertz_stan_model', line 43, column 19 to line 45, column 5)",
   " (in 'Ranef_Gompertz_stan_model', line 43, column 4 to line 45, column 5)",
   " (in 'Ranef_Gompertz_stan_model', line 25, column 2 to column 41)",
@@ -53,7 +53,7 @@ static constexpr std::array<const char*, 42> locations_array__ =
   " (in 'Ranef_Gompertz_stan_model', line 32, column 2 to column 34)",
   " (in 'Ranef_Gompertz_stan_model', line 33, column 2 to column 35)",
   " (in 'Ranef_Gompertz_stan_model', line 34, column 2 to column 32)",
-  " (in 'Ranef_Gompertz_stan_model', line 37, column 4 to column 134)",
+  " (in 'Ranef_Gompertz_stan_model', line 37, column 4 to column 122)",
   " (in 'Ranef_Gompertz_stan_model', line 36, column 17 to line 38, column 3)",
   " (in 'Ranef_Gompertz_stan_model', line 36, column 2 to line 38, column 3)",
   " (in 'Ranef_Gompertz_stan_model', line 2, column 2 to column 17)",
@@ -62,8 +62,8 @@ static constexpr std::array<const char*, 42> locations_array__ =
   " (in 'Ranef_Gompertz_stan_model', line 4, column 2 to column 16)",
   " (in 'Ranef_Gompertz_stan_model', line 5, column 9 to column 10)",
   " (in 'Ranef_Gompertz_stan_model', line 5, column 2 to column 19)",
-  " (in 'Ranef_Gompertz_stan_model', line 6, column 30 to column 31)",
-  " (in 'Ranef_Gompertz_stan_model', line 6, column 2 to column 33)",
+  " (in 'Ranef_Gompertz_stan_model', line 6, column 27 to column 28)",
+  " (in 'Ranef_Gompertz_stan_model', line 6, column 2 to column 30)",
   " (in 'Ranef_Gompertz_stan_model', line 8, column 2 to column 19)",
   " (in 'Ranef_Gompertz_stan_model', line 9, column 2 to column 31)",
   " (in 'Ranef_Gompertz_stan_model', line 15, column 18 to column 19)",
@@ -77,7 +77,7 @@ private:
   int J;
   Eigen::Matrix<double,-1,1> Age_data__;
   Eigen::Matrix<double,-1,1> Length_data__;
-  std::vector<int> Group;
+  std::vector<int> ID;
   Eigen::Matrix<double,-1,1> priors_data__;
   Eigen::Matrix<double,-1,1> priors_se_data__;
   Eigen::Map<Eigen::Matrix<double,-1,1>> Age{nullptr, 0};
@@ -170,17 +170,17 @@ public:
         }
       }
       current_statement__ = 34;
-      stan::math::validate_non_negative_index("Group", "N", N);
+      stan::math::validate_non_negative_index("ID", "N", N);
       current_statement__ = 35;
-      context__.validate_dims("data initialization", "Group", "int",
+      context__.validate_dims("data initialization", "ID", "int",
         std::vector<size_t>{static_cast<size_t>(N)});
-      Group = std::vector<int>(N, std::numeric_limits<int>::min());
+      ID = std::vector<int>(N, std::numeric_limits<int>::min());
       current_statement__ = 35;
-      Group = context__.vals_i("Group");
+      ID = context__.vals_i("ID");
       current_statement__ = 35;
-      stan::math::check_greater_or_equal(function__, "Group", Group, 1);
+      stan::math::check_greater_or_equal(function__, "ID", ID, 1);
       current_statement__ = 35;
-      stan::math::check_less_or_equal(function__, "Group", Group, J);
+      stan::math::check_less_or_equal(function__, "ID", ID, J);
       current_statement__ = 36;
       context__.validate_dims("data initialization", "priors", "double",
         std::vector<size_t>{static_cast<size_t>(7)});
@@ -358,22 +358,22 @@ public:
                              stan::model::index_uni(i)),
                            (stan::model::rvalue(L0_j, "L0_j",
                               stan::model::index_uni(
-                                stan::model::rvalue(Group, "Group",
+                                stan::model::rvalue(ID, "ID",
                                   stan::model::index_uni(i)))) *
                            stan::math::exp(
                              (stan::math::log(
                                 (stan::model::rvalue(Linf_j, "Linf_j",
                                    stan::model::index_uni(
-                                     stan::model::rvalue(Group, "Group",
+                                     stan::model::rvalue(ID, "ID",
                                        stan::model::index_uni(i)))) /
                                 stan::model::rvalue(L0_j, "L0_j",
                                   stan::model::index_uni(
-                                    stan::model::rvalue(Group, "Group",
+                                    stan::model::rvalue(ID, "ID",
                                       stan::model::index_uni(i)))))) * (1 -
                              stan::math::exp(
                                (-stan::model::rvalue(k_j, "k_j",
                                    stan::model::index_uni(
-                                     stan::model::rvalue(Group, "Group",
+                                     stan::model::rvalue(ID, "ID",
                                        stan::model::index_uni(i)))) *
                                stan::model::rvalue(Age, "Age",
                                  stan::model::index_uni(i)))))))), sigma));
@@ -490,24 +490,22 @@ public:
             stan::model::rvalue(Length, "Length", stan::model::index_uni(i)),
             (stan::model::rvalue(L0_j, "L0_j",
                stan::model::index_uni(
-                 stan::model::rvalue(Group, "Group",
-                   stan::model::index_uni(i)))) *
+                 stan::model::rvalue(ID, "ID", stan::model::index_uni(i)))) *
             stan::math::exp(
               (stan::math::log(
                  (stan::model::rvalue(Linf_j, "Linf_j",
                     stan::model::index_uni(
-                      stan::model::rvalue(Group, "Group",
-                        stan::model::index_uni(i)))) /
+                      stan::model::rvalue(ID, "ID", stan::model::index_uni(i))))
+                 /
                  stan::model::rvalue(L0_j, "L0_j",
                    stan::model::index_uni(
-                     stan::model::rvalue(Group, "Group",
-                       stan::model::index_uni(i)))))) * (1 -
+                     stan::model::rvalue(ID, "ID", stan::model::index_uni(i))))))
+              * (1 -
               stan::math::exp(
                 (-stan::model::rvalue(k_j, "k_j",
                     stan::model::index_uni(
-                      stan::model::rvalue(Group, "Group",
-                        stan::model::index_uni(i)))) *
-                stan::model::rvalue(Age, "Age", stan::model::index_uni(i)))))))),
+                      stan::model::rvalue(ID, "ID", stan::model::index_uni(i))))
+                * stan::model::rvalue(Age, "Age", stan::model::index_uni(i)))))))),
             sigma), "assigning variable log_lik", stan::model::index_uni(i));
       }
       out__.write(log_lik);

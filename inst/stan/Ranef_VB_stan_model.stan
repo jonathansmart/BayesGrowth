@@ -1,10 +1,10 @@
 
 data {
   int<lower=1> N; // Total number of observations
-  int<lower=1> J; // Number of Groups
+  int<lower=1> J; // Number of IDs
   vector[N] Age; // Age of each observation
   vector[N] Length; // Length of each observation
-  int<lower=1, upper=J> Group[N]; // Group index for each observation
+  int<lower=1, upper=J> ID[N]; // ID index for each observation
 
   //prior data
   vector[7] priors; //Linf, L0, k, sigma, and the sigma of Linf, L0 and k
@@ -17,13 +17,13 @@ parameters {
   real<lower=0> k; // Population-level growth rate
   real L0; // Population-level theoretical Length at Age  zero
 
-  vector<lower=0>[J] Linf_j; // Group-level asymptotic Length
-  vector<lower=0>[J] k_j; // Group-level growth rate
-  vector[J] L0_j; // Group-level theoretical Length at Age  zero
+  vector<lower=0>[J] Linf_j; // ID-level asymptotic Length
+  vector<lower=0>[J] k_j; // ID-level growth rate
+  vector[J] L0_j; // ID-level theoretical Length at Age  zero
 
-  real<lower=0> sigma_Linf; // SD of Group-level Linf
-  real<lower=0> sigma_k; // SD of Group-level k
-  real<lower=0> sigma_L0; // SD of Group-level t0
+  real<lower=0> sigma_Linf; // SD of ID-level Linf
+  real<lower=0> sigma_k; // SD of ID-level k
+  real<lower=0> sigma_L0; // SD of ID-level t0
   real<lower=0> sigma; // SD of measurement error
 }
 
@@ -44,7 +44,7 @@ model {
 
   // Likelihood
   for (i in 1:N) {
-    target += normal_lpdf(Length[i] | Linf_j[Group[i]] - (Linf_j[Group[i]] - L0_j[Group[i]])*exp(-k_j[Group[i]]*Age[i]), sigma);
+    target += normal_lpdf(Length[i] | Linf_j[ID[i]] - (Linf_j[ID[i]] - L0_j[ID[i]])*exp(-k_j[ID[i]]*Age[i]), sigma);
 
   }
 
@@ -54,7 +54,7 @@ model {
   generated quantities {
     vector[N] log_lik;
     for (i in 1:N) {
-      log_lik[i] = normal_lpdf(Length[i] | Linf_j[Group[i]] - (Linf_j[Group[i]] - L0_j[Group[i]])*exp(-k_j[Group[i]]*Age[i]), sigma);
+      log_lik[i] = normal_lpdf(Length[i] | Linf_j[ID[i]] - (Linf_j[ID[i]] - L0_j[ID[i]])*exp(-k_j[ID[i]]*Age[i]), sigma);
     }
 
   }

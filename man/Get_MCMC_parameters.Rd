@@ -7,16 +7,20 @@
 Get_MCMC_parameters(obj)
 }
 \arguments{
-\item{obj}{An output from the Estimate_MCMC_Growth function}
+\item{obj}{An output from the `Estimate_MCMC_Growth` or `Estimate_MCMC_BC_Growth`function}
 }
 \value{
-A data.frame with the posterior distributions for each parameter.
+If used with `Estimate_MCMC_Growth` then a data.frame with the posterior distributions for each parameter.
     These include the mean, Standard error of the mean, Standard deviation of the mean, median,
     95th percentiles, effective sample sizes and Rhat.
+    A two element list of data.frames is returned if used with `Estimate_MCMC_BC_Growth`.
+    This includes the population level and ID level parameters.
 }
 \description{
-Get parameter summary statistics from the outputs of a Estimate_MCMC_Growth object. It is simplified set of
-    results than is returned from summary(obj).
+Get parameter summary statistics from the outputs of a `Estimate_MCMC_Growth`
+    or `Estimate_MCMC_BC_Growth` object. It is simplified set of
+    results than is returned from summary(obj). If used with `Estimate_MCMC_BC_Growth`
+    then a list of outputs for the population and ID level parameters is returned.
 }
 \examples{
 \donttest{

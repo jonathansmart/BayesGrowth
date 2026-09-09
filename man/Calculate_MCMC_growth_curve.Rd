@@ -12,7 +12,7 @@ Calculate_MCMC_growth_curve(
 )
 }
 \arguments{
-\item{obj}{An output from the Estimate_MCMC_Growth function}
+\item{obj}{An output from the `Estimate_MCMC_Growth` or `Estimate_MCMC_BC_Growth` functions.}
 
 \item{Model}{The model used in the Estimate_MCMC_Growth object. Either "VB", "Gom" or "Log".}
 
@@ -28,7 +28,7 @@ A tibble that has been formatted using  tidybayes::mean_qi(). This includes
     variables: Age, LAA, .lower, .upper, .width, .point and .interval.
 }
 \description{
-A 'stan.fit' object produced from Estimate_MCMC_Growth is converted to a dataframe
+A 'stan.fit' object produced from `Estimate_MCMC_Growth` or `Estimate_MCMC_BC_Growth` is converted to a dataframe
     and structured using requested quantiles. This function takes the list of MCMC results for multiple
     chains, restructures them into a dataframe and calculates quantiles around length-at-age estimates.
     The quantiles are produced using the tidybayes::mean_qi() function and this result is returned from the function.
