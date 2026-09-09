@@ -2,9 +2,8 @@ name: Build Pre-Compiled Package Binaries
 
 on:
   push:
-    tags:
-      - 'v*' # Triggers whenever you push a version tag (e.g., v1.1.0-beta)
-
+    branches:
+      - back-calculation
 jobs:
   build-binaries:
     name: Build binary on ${{ matrix.os }}
