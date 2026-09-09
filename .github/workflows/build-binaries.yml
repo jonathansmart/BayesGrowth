@@ -3,7 +3,7 @@ name: Build Pre-Compiled Package Binaries
 on:
   push:
     branches:
-      - back-calculation
+      - back-calculation #dev branch
 
 jobs:
   build-binaries:
