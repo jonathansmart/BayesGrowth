@@ -19,7 +19,8 @@ Compare_Growth_Models(
   n.chains = 4,
   thin = 1,
   verbose = FALSE,
-  stats = "LooIC"
+  stats = "LooIC",
+  return.model.pars = FALSE
 )
 }
 \arguments{
@@ -67,9 +68,14 @@ Thinning is generally only necessary for complicated models as it increases run 
 which might be helpful for model debugging.}
 
 \item{stats}{Which statistics should be returned: LooIC, WAIC or both (both will return a list)}
+
+\item{return.model.pars}{Default is FALSE. If TRUE then a 2 element list of the requested model selection statistics
+and the growth parameters of each model are returned.}
 }
 \value{
-A dataframe with the requested stats
+If return.model.pars = FALSE then a dataframe of the requested model selection statistics is returned.
+    If return.model.pars = TRUE then a 2 element list of the requested model selection statistics and the
+    growth parameters of each model are returned.
 }
 \description{
 Conduct growth model selection using 'Leave One Out' (LOO) cross validation analysis and

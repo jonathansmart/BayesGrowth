@@ -458,6 +458,8 @@ Estimate_MCMC_BC_Growth <- function(data, ID_col = NULL,  Model = NULL, Linf = N
 #' @param verbose TRUE or FALSE: flag indicating whether to print intermediate output from Stan on the console,
 #'     which might be helpful for model debugging.
 #' @param stats Which statistics should be returned: LooIC, WAIC or both (both will return a list)
+#' @param return.model.pars Default is FALSE. If TRUE then a 2 element list of the requested model selection statistics
+#'     and the growth parameters of each model are returned.
 #' @import dplyr rstan loo
 #' @examples
 #' \donttest{
@@ -485,12 +487,14 @@ Estimate_MCMC_BC_Growth <- function(data, ID_col = NULL,  Model = NULL, Linf = N
 #'                                                sigma.max = 100,
 #'                                                k.max = 1)
 #' }
-#' @return A dataframe with the requested stats
+#' @return If return.model.pars = FALSE then a dataframe of the requested model selection statistics is returned.
+#'     If return.model.pars = TRUE then a 2 element list of the requested model selection statistics and the
+#'     growth parameters of each model are returned.
 #' @export
 Compare_Growth_Models <- function(data, Linf = NULL, Linf.se = NULL,
                                   L0 = NULL, L0.se = NULL, k.max = NULL, sigma.max = NULL,
                                   iter = 10000, BurnIn = iter/2, n_cores = 1,controls = NULL,
-                                  n.chains = 4, thin = 1,verbose = FALSE, stats = "LooIC"){
+                                  n.chains = 4, thin = 1,verbose = FALSE, stats = "LooIC", return.model.pars = FALSE){
 
 
   if(any(is.null(c(Linf, Linf.se, L0, L0.se, k.max, sigma.max)))) stop("At least one parameter or its error are not correctly specified")
@@ -676,7 +680,43 @@ Compare_Growth_Models <- function(data, Linf = NULL, Linf.se = NULL,
   }
 
 
-  return(Results)
+  if(return.model.pars == TRUE){
+
+    VB_pars <- dplyr::relocate(
+      dplyr::mutate(
+        Get_MCMC_parameters(VB_model),
+        Model = "Von Bertalanffy"),
+      Model,
+      .before = 1)
+
+    Gom_pars <- dplyr::relocate(
+      dplyr::mutate(
+        Get_MCMC_parameters(Gom_model),
+        Model = "Gompertz"),
+      Model,
+      .before = 1)
+
+    Log_pars <- dplyr::relocate(
+      dplyr::mutate(
+        Get_MCMC_parameters(Logistic_model),
+        Model = "Logistic"),
+      Model,
+      .before = 1)
+
+    Parameter_table <- rbind(VB_pars, Gom_pars, Log_pars)
+
+    Results_list <- list()
+    Results_list[[1]] <- Results
+    Results_list[[2]] <- Parameter_table
+
+    names(Results_list) <- c("Model selection stats", "Candidate model growth parameters")
+
+    return(Results_list)
+  } else {
+    return(Results)
+  }
+
+
 
 }
 
@@ -718,6 +758,8 @@ Compare_Growth_Models <- function(data, Linf = NULL, Linf.se = NULL,
 #' @param verbose TRUE or FALSE: flag indicating whether to print intermediate output from Stan on the console,
 #'     which might be helpful for model debugging.
 #' @param stats Which statistics should be returned: LooIC, WAIC or both (both will return a list)
+#' @param return.model.pars Default is FALSE. If TRUE then a 2 element list of the requested model selection statistics
+#'     and the growth parameters of each model are returned.
 #' @import dplyr rstan loo
 #' @examples
 #' \donttest{
@@ -746,12 +788,14 @@ Compare_Growth_Models <- function(data, Linf = NULL, Linf.se = NULL,
 #'                                                sigma.max = 200,
 #'                                                k.max = 1)
 #' }
-#' @return A dataframe with the requested stats
+#' @return If return.model.pars = FALSE then a dataframe of the requested model selection statistics is returned.
+#'     If return.model.pars = TRUE then a 2 element list of the requested model selection statistics and the
+#'     growth parameters of each model are returned.
 #' @export
 Compare_BC_Growth_Models <- function(data, ID_col = NULL,  Linf = NULL, Linf.se = NULL,
                                   L0 = NULL, L0.se = NULL, k.max = NULL, sigma.max = NULL,
                                   iter = 10000, BurnIn = iter/2, n_cores = 1,controls = NULL,
-                                  n.chains = 4, thin = 1,verbose = FALSE, stats = "LooIC"){
+                                  n.chains = 4, thin = 1,verbose = FALSE, stats = "LooIC", return.model.pars = FALSE){
 
 
   if(any(is.null(c(Linf, Linf.se, L0, L0.se, k.max, sigma.max)))) stop("At least one parameter or its error are not correctly specified")
@@ -957,8 +1001,42 @@ Compare_BC_Growth_Models <- function(data, ID_col = NULL,  Linf = NULL, Linf.se 
     Results <-  waic_results
   }
 
+ # Return. candidate model parameters if requested
+  if(return.model.pars == TRUE){
 
-  return(Results)
+    VB_pars <- dplyr::relocate(
+      dplyr::mutate(
+        Get_MCMC_parameters(VB_model)$`Population level parameters`,
+        Model = "Von Bertalanffy"),
+      Model,
+      .before = 1)
+
+    Gom_pars <- dplyr::relocate(
+      dplyr::mutate(
+        Get_MCMC_parameters(Gom_model)$`Population level parameters`,
+        Model = "Gompertz"),
+      Model,
+      .before = 1)
+
+    Log_pars <- dplyr::relocate(
+      dplyr::mutate(
+        Get_MCMC_parameters(Logistic_model)$`Population level parameters`,
+        Model = "Logistic"),
+      Model,
+      .before = 1)
+
+    Parameter_table <- rbind(VB_pars, Gom_pars , Log_pars )
+
+    Results_list <- list()
+    Results_list[[1]] <- Results
+    Results_list[[2]] <- Parameter_table
+
+    names(Results_list) <- c("Model selection stats", "Candidate model growth parameters")
+
+    return(Results_list)
+  } else {
+    return(Results)
+  }
 
 }
 
